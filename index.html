@@ -2,253 +2,177 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bee HAPPY LOVE // Root Center</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Terminal Simulator</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
-        :root {
-            --bg-color: #050505;
-            --main-green: #00ff41;
-            --danger-red: #ff003c;
-            --love-pink: #ff007f;
-            --panel-bg: rgba(0, 20, 0, 0.7);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
-            background-color: var(--bg-color);
-            color: var(--main-green);
+            background-color: #000;
+            color: #00ff41;
             font-family: 'Share Tech Mono', monospace;
+            margin: 0;
+            padding: 10px;
             height: 100vh;
+            overflow-x: hidden;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
         }
 
-        /* Glitch & CRT Effect */
+        /* CRT Effect */
         body::after {
-            content: " "; display: block; position: absolute;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 10; background-size: 100% 2px, 3px 100%; pointer-events: none;
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 2px;
+            pointer-events: none;
+            z-index: 10;
         }
 
-        header {
-            background: #111;
-            padding: 15px 20px;
-            text-align: center;
-            border-bottom: 2px solid var(--love-pink);
-            box-shadow: 0 0 20px rgba(255, 0, 127, 0.4);
-            z-index: 5;
-            position: relative;
-        }
-
-        header h1 {
-            color: var(--love-pink);
-            font-size: 1.8rem;
-            text-shadow: 0 0 10px var(--love-pink), 0 0 20px var(--danger-red);
-            letter-spacing: 3px;
-        }
-        
-        .sys-status {
-            color: var(--danger-red);
-            font-size: 0.9rem;
-            animation: blink 0.8s infinite;
-            margin-top: 5px;
-        }
-
-        @keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
-
-        /* Mobile Friendly Responsive Grid */
-        .dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 10px;
-            padding: 10px;
-            flex: 1;
+        #terminal {
+            flex-grow: 1;
             overflow-y: auto;
-            z-index: 5;
-            position: relative;
-        }
-
-        .panel {
-            background: var(--panel-bg);
-            border: 1px solid var(--main-green);
-            display: flex;
-            flex-direction: column;
-            height: 250px; /* Fixed height for neat grid */
-            box-shadow: inset 0 0 15px rgba(0, 255, 65, 0.1);
-        }
-
-        .panel.danger {
-            border-color: var(--danger-red);
-            box-shadow: inset 0 0 15px rgba(255, 0, 60, 0.2);
-        }
-
-        .panel-header {
-            background: var(--main-green);
-            color: #000;
-            padding: 8px 10px;
-            font-weight: bold;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .panel.danger .panel-header {
-            background: var(--danger-red);
-            color: #fff;
-        }
-
-        .content {
-            padding: 10px;
-            overflow-y: hidden;
-            flex: 1;
-            font-size: 0.85rem;
-            line-height: 1.4;
+            padding-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.5;
             word-wrap: break-word;
         }
 
-        .text-pink { color: var(--love-pink); }
-        .text-red { color: var(--danger-red); }
-        .text-cyan { color: #00e5ff; }
-        .text-yellow { color: #ffcc00; }
-        .hex { opacity: 0.7; font-size: 0.75rem; }
+        .cmd { color: #00e5ff; }
+        .success { color: #00ff41; }
+        .error { color: #ff003c; }
+        .warning { color: #ffcc00; }
 
-        /* Custom Scrollbar for dashboard container */
-        .dashboard::-webkit-scrollbar { width: 5px; }
-        .dashboard::-webkit-scrollbar-thumb { background: var(--love-pink); }
-
-    </style>
-</head>
-<body>
-
-    <header>
-        <h1>[ SYSTEM: Bee HAPPY LOVE ]</h1>
-        <div class="sys-status">GLOBAL INFECTION MATRIX // MULTIPLE BREACHES DETECTED</div>
-    </header>
-
-    <div class="dashboard">
-        
-        <!-- Live Keylogger Intercept -->
-        <div class="panel">
-            <div class="panel-header"><span>> Keylogger_Stream</span> <span class="text-pink">REC O</span></div>
-            <div id="keylog" class="content text-yellow"></div>
-        </div>
-
-        <!-- Botnet Shell Execution -->
-        <div class="panel danger">
-            <div class="panel-header">> Auto_Exploit_Shell</div>
-            <div id="shellLogs" class="content"></div>
-        </div>
-
-        <!-- Global IP Tracking -->
-        <div class="panel">
-            <div class="panel-header">> Sat_Target_Tracking</div>
-            <div id="satTracking" class="content"></div>
-        </div>
-
-        <!-- Ransomware BTC Wallet -->
-        <div class="panel danger">
-            <div class="panel-header"><span>> Ransom_Wallet (BTC)</span> <span>ENCRYPTED</span></div>
-            <div id="btcWallet" class="content text-cyan"></div>
-        </div>
-
-        <!-- Hex Packet Sniffer -->
-        <div class="panel">
-            <div class="panel-header">> Deep_Packet_Sniffer</div>
-            <div id="hexSniff" class="content hex"></div>
-        </div>
-
-        <!-- Mass Phishing & Malware spread -->
-        <div class="panel">
-            <div class="panel-header">> Bee_Happy_Payload_Dist</div>
-            <div id="payloadDist" class="content"></div>
-        </div>
-
-    </div>
-
-    <script>
-        // Utilities
-        const rIP = () => `${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}`;
-        const rHex = (len) => [...Array(len)].map(() => Math.floor(Math.random()*16).toString(16).toUpperCase()).join('');
-        
-        function addLog(id, text, maxLines = 15) {
-            const el = document.getElementById(id);
-            const p = document.createElement('div');
-            p.innerHTML = text;
-            el.appendChild(p);
-            if (el.childNodes.length > maxLines) el.removeChild(el.firstChild);
-            el.scrollTop = el.scrollHeight;
+        /* Hidden input for mobile keyboard */
+        #hiddenInput {
+            position: absolute;
+            opacity: 0;
+            top: -1000px;
         }
 
-        // 1. Keylogger Stream (Typing simulation)
-        const keystrokes = [
-            "facebook.com/login... user: admin@corp.com pass: <span class='text-red'>ILoveYou2023!</span> [ENTER]",
-            "paypal.com... auth_token: <span class='text-pink'>b33h4ppy</span>",
-            "bankofamerica.com/transfer... acc: 9832**** routing: 334*** [ENTER]",
-            "gmail.com... compose... subject: 'Confidential'...",
-            "cmd.exe... type: 'disable_antivirus.bat' [ENTER]"
+        /* Cursor blinking */
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 15px;
+            background-color: #00ff41;
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Mobile instruction */
+        #mobile-hint {
+            color: #555;
+            text-align: center;
+            font-size: 12px;
+            padding: 10px;
+            border-top: 1px solid #333;
+        }
+    </style>
+</head>
+<body onclick="focusInput()">
+
+    <div id="terminal"></div>
+    <span class="cursor" id="cursor"></span>
+
+    <div id="mobile-hint">
+        [ স্ক্রিনে ট্যাপ করে কীবোর্ড ওপেন করুন এবং যেকোনো কী (Key) চাপতে থাকুন ]
+    </div>
+
+    <input type="text" id="hiddenInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+
+    <script>
+        // কাল্পনিক হ্যাকিং কমান্ড এবং তার আউটপুট
+        const sequence = [
+            { cmd: "init_connection --target smtp.gmail.com --port 465", out: "[+] Connection established to target server.\n[+] Initiating SSL/TLS handshake... OK.", color: "success" },
+            { cmd: "bypass_auth_gateway -level 4", out: "[!] Warning: High-level firewall detected.\n[!] Rerouting through proxy chains (Russia -> Panama -> Target)...\n[+] Firewall bypassed successfully.", color: "warning" },
+            { cmd: "inject_payload --type sql_blind --user target@gmail.com", out: "[-] Exploit failed. Retrying with Zero-Day payload...\n[+] Payload injected into memory.", color: "error" },
+            { cmd: "extract_hash --db main_users", out: "[+] Extracting data... 100%\n[+] Hash obtained: 0x8F9A2B4C9201F...\n[!] Commencing brute-force attack...", color: "success" },
+            { cmd: "crack_hash --rainbow-table /usr/share/wordlists/rockyou.txt", out: "[!] Cracking... [||||||||||||||||||||] 100%\n[+] Password decrypted: *********", color: "success" },
+            { cmd: "disable_2fa --spoof-token", out: "[!] Intercepting SMS gateway...\n[+] 2FA Token spoofed. Security layer breached.", color: "warning" },
+            { cmd: "grant_root_access", out: "\n=========================================\n[+] ACCESS GRANTED. Welcome to the system.\n=========================================\n", color: "success" }
         ];
-        setInterval(() => {
-            addLog('keylog', `[Intercept] ${keystrokes[Math.floor(Math.random() * keystrokes.length)]}`, 10);
-        }, 1200);
 
-        // 2. Auto Exploit Shell
-        const shellCmds = [
-            `[*] Injecting Bee_HAPPY_LOVE.dll into PID ${Math.floor(Math.random()*9000)}`,
-            `[+] Privilege Escalation Successful -> NT AUTHORITY\\SYSTEM`,
-            `[-] Bypassing Windows Defender... <span class='text-pink'>SUCCESS</span>`,
-            `[*] Exfiltrating SAM database from ${rIP()}`,
-            `[!] WARNING: Reverse connection dropped, restarting listener...`
-        ];
-        setInterval(() => {
-            addLog('shellLogs', shellCmds[Math.floor(Math.random() * shellCmds.length)], 12);
-        }, 600);
+        let currentStep = 0;
+        let currentCharIndex = 0;
+        let isTyping = false;
+        let isOutputting = false;
 
-        // 3. Satellite Target Tracking (Lat/Long + IP)
-        setInterval(() => {
-            let lat = (Math.random() * 180 - 90).toFixed(4);
-            let lon = (Math.random() * 360 - 180).toFixed(4);
-            let locs = ["Washington DC", "Moscow", "Beijing", "London", "Tokyo", "Berlin", "New York"];
-            let loc = locs[Math.floor(Math.random() * locs.length)];
-            addLog('satTracking', `Locking: ${loc} | IP: <span class='text-red'>${rIP()}</span> | LAT: ${lat} LON: ${lon}`);
-        }, 800);
+        const terminal = document.getElementById('terminal');
+        const hiddenInput = document.getElementById('hiddenInput');
+        const cursor = document.getElementById('cursor');
 
-        // 4. Ransomware BTC Wallet
-        let totalBtc = 142.53;
-        setInterval(() => {
-            let incoming = (Math.random() * 2).toFixed(4);
-            totalBtc += parseFloat(incoming);
-            let btcAddress = `bc1q${rHex(8).toLowerCase()}...${rHex(4).toLowerCase()}`;
-            addLog('btcWallet', `[+] Received: <span class='text-green'>+${incoming} BTC</span> from ${btcAddress}`);
-            addLog('btcWallet', `Total Balance: <span class='text-pink'>${totalBtc.toFixed(4)} BTC</span>`, 8);
-        }, 2000);
+        // স্ক্রিনে চাপ দিলে কীবোর্ড ওপেন হবে
+        function focusInput() {
+            hiddenInput.focus();
+        }
 
-        // 5. Hex Deep Packet Sniffer
-        setInterval(() => {
-            let hexStr = `0x${rHex(4)}  `;
-            for(let i=0; i<6; i++) hexStr += rHex(2) + ' ';
-            hexStr += `  ...${Math.random().toString(36).substring(2, 6)}`;
-            addLog('hexSniff', hexStr, 15);
-        }, 100);
+        // টাইপ করা টেক্সট টার্মিনালে দেখানো
+        function appendText(text, className = '') {
+            let span = document.createElement('span');
+            if (className) span.className = className;
+            span.innerHTML = text.replace(/\n/g, '<br>');
+            terminal.appendChild(span);
+            scrollToBottom();
+        }
 
-        // 6. Payload Distribution
-        const payloads = [
-            `Sending 'Love_Letter.pdf.exe' to target network...`,
-            `Worm spreading via SMBv3 (CVE-2020-0796) -> IP: ${rIP()}`,
-            `Encrypting file system on Node-${Math.floor(Math.random()*999)}... <span class='text-red'>LOCKED</span>`,
-            `Overwriting Master Boot Record (MBR)...`,
-            `Sending spam phishing to 50,000 contacts...`
-        ];
-        setInterval(() => {
-            addLog('payloadDist', `> ${payloads[Math.floor(Math.random() * payloads.length)]}`, 12);
-        }, 900);
+        function scrollToBottom() {
+            window.scrollTo(0, document.body.scrollHeight);
+        }
 
+        // কীবোর্ড ইনপুট হ্যান্ডলার
+        hiddenInput.addEventListener('input', (e) => {
+            e.preventDefault();
+            hiddenInput.value = ""; // ফিল্ড খালি রাখা
+            
+            if (isOutputting || currentStep >= sequence.length) return;
+
+            const step = sequence[currentStep];
+
+            if (!isTyping) {
+                appendText("root@kali:~# ", "cmd");
+                isTyping = true;
+            }
+
+            // ব্যবহারকারী যেকোনো কী চাপলে আমরা আসল কমান্ডের ৩টি করে অক্ষর প্রিন্ট করব (দ্রুত টাইপ দেখানোর জন্য)
+            const charsToType = 3; 
+            const textToInsert = step.cmd.substring(currentCharIndex, currentCharIndex + charsToType);
+            
+            appendText(textToInsert);
+            currentCharIndex += charsToType;
+
+            // কমান্ড টাইপ করা শেষ হলে
+            if (currentCharIndex >= step.cmd.length) {
+                isOutputting = true;
+                appendText("<br>");
+                
+                // একটু সময় নিয়ে আউটপুট দেখানো
+                setTimeout(() => {
+                    appendText(step.out + "<br><br>", step.color);
+                    currentStep++;
+                    currentCharIndex = 0;
+                    isTyping = false;
+                    isOutputting = false;
+                    
+                    if(currentStep >= sequence.length) {
+                        document.getElementById('mobile-hint').innerText = "[ হ্যাকিং সিমুলেশন সম্পন্ন হয়েছে ]";
+                    }
+                }, 800);
+            }
+        });
+
+        // পিসির কীবোর্ডের জন্য
+        document.addEventListener('keydown', () => {
+            hiddenInput.focus();
+        });
+        
+        window.onload = focusInput;
     </script>
 </body>
 </html>
