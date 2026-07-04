@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>kali@core-node-sec: ~/api/interceptors/oauth2</title>
+    <title>kali@sec-ops-node-04: ~/audit/google/oauth2</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;700&display=swap');
 
@@ -14,8 +14,8 @@
         }
 
         body {
-            background-color: #08090c;
-            color: #bcbcbc;
+            background-color: #0b0c10;
+            color: #c5c6c7;
             font-family: 'Fira Code', monospace;
             height: 100vh;
             display: flex;
@@ -25,25 +25,25 @@
 
         /* Kali Desktop Panel OS Bar */
         #os-panel {
-            background-color: #111216;
+            background-color: #121318;
             height: 26px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 0 12px;
             font-size: 11px;
-            color: #8c91a0;
-            border-bottom: 1px solid #1c1e24;
+            color: #8f94a5;
+            border-bottom: 1px solid #1f232a;
             user-select: none;
         }
         .panel-group { display: flex; align-items: center; gap: 14px; }
         .stat-active { color: #50fa7b; font-weight: bold; }
-        .stat-alert { color: #ff5555; font-weight: bold; }
+        .stat-warn { color: #ffb86c; font-weight: bold; }
 
         /* Window Header Chrome (XFCE4 Terminal Style) */
         #window-chrome {
-            background: linear-gradient(to bottom, #252830, #1c1e24);
-            border-bottom: 1px solid #111216;
+            background: linear-gradient(to bottom, #21242c, #191b22);
+            border-bottom: 1px solid #0b0c10;
             padding: 6px 12px;
             display: flex;
             justify-content: space-between;
@@ -66,13 +66,12 @@
             font-size: 11px;
             line-height: 1.45;
             word-wrap: break-word;
-            background-color: #08090c;
+            background-color: #0b0c10;
         }
 
         /* Kali Color Palettes */
-        .k-blue { color: #268bd2; font-weight: bold; }
-        .k-red { color: #dc322f; font-weight: bold; }
-        .k-magenta { color: #d33682; }
+        .k-blue { color: #2094f3; font-weight: bold; }
+        .k-red { color: #ff5555; font-weight: bold; }
         .k-text { color: #eaeaea; }
         .cmd-line { color: #ffffff; font-weight: bold; }
         
@@ -81,12 +80,12 @@
         .log-fail { color: #ff5555; }
         .log-warn { color: #ffb86c; }
         .log-info { color: #8be9fd; }
-        .log-dark { color: #4e5163; }
-        .log-hex { color: #3b3d4a; font-size: 10px; }
+        .log-dark { color: #5c6370; }
+        .log-hex { color: #4b5263; font-size: 10px; }
         .log-json { color: #bd93f9; font-size: 10.5px; }
 
         .ascii-banner {
-            color: #268bd2;
+            color: #2094f3;
             white-space: pre;
             font-size: 6.5px;
             line-height: 1.1;
@@ -114,10 +113,10 @@
             transform: translateX(-50%);
             color: #6272a4;
             font-size: 11px;
-            background: #111216;
+            background: #121318;
             padding: 8px 18px;
             border-radius: 4px;
-            border: 1px solid #1c1e24;
+            border: 1px solid #1f232a;
             z-index: 100;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }
@@ -129,21 +128,21 @@
 
     <div id="os-panel">
         <div class="panel-group">
-            <span style="font-weight: bold; color: #fff;">Kali Applications</span>
+            <span style="font-weight: bold; color: #fff;">Applications</span>
             <span>Places</span>
-            <span>View</span>
+            <span>Terminal</span>
         </div>
         <div class="panel-group">
-            <span>[NET_INTERFACE: <span class="stat-active">wlan0mon</span>]</span>
-            <span>TUNNEL: <span class="stat-active">AES-256-GCM</span></span>
-            <span>SYS_TEMP: <span class="stat-warn">48°C</span></span>
-            <span id="live-timer">00:00:00</span>
+            <span>[INTERFACE: <span class="stat-active">eth0:tun0</span>]</span>
+            <span>ENC: <span class="stat-active">TLS_CHACHA20_POLY1305</span></span>
+            <span>LOAD: <span class="stat-warn">1.42</span></span>
+            <span id="live-timer">21:34:50</span>
         </div>
     </div>
 
     <div id="window-chrome">
         <div class="window-title">
-            <span style="color: #268bd2;">🗖</span> root@core-node-sec: ~/api/interceptors/oauth2
+            <span style="color: #2094f3;">⬤</span> root@sec-ops-node-04: ~/audit/google/oauth2
         </div>
         <div class="window-controls">
             <span class="dot dot-min"></span>
@@ -158,15 +157,15 @@
   ██╔══██╗██╔══██╗██║     ██║██║     ██║████╗  ██║██║   ██║╚██╗██╔╝  ██╔════╝██╔═══██╗██╔══██╗██╔════╝
   ██████╔╝███████║██║     ██║██║     ██║██╔██╗ ██║██║   ██║ ╚███╔╝   ██║     ██║   ██║██████╔╝█████╗  
   ██╔═══╝ ██╔══██║██║     ██║██║     ██║██║╚██╗██║██║   ██║ ██╔██╗   ██║     ██║   ██║██╔══██╗██╔══╝  
-  ██║     ██║  ██║███████╗██║███████╗██║██║ ╚████║╚██████╔╝██╔╝ ██╗  ╚██████╗╚██████╔╝██║  ██║███████╗
+  ██║     ██║  ██║███████╗██║███████╗██║██║ ╚████║╚██████╔╝██╔╝ ██╗  ╚██████╗╚██████╔╝██║  ██║███████║
   ╚═╝     ╚═╝  ╚═╝╚══════╝╚═╝╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝   ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝
-                                                      [ BACKEND API AUDITING ENGINE v7.4.2 ]
+                                                      [ RED-TEAM INFRASTRUCTURE AUDIT TOOL v8.1 ]
         </div>
         
         <div id="terminal-history"></div>
         
         <div id="current-prompt-wrapper">
-            <span class="k-blue">┌──(</span><span class="k-red">root㉿core-node-sec</span><span class="k-blue">)-[</span><span class="k-text">~/api/interceptors/oauth2</span><span class="k-blue">]</span><br>
+            <span class="k-blue">┌──(</span><span class="k-red">root㉿sec-ops-node-04</span><span class="k-blue">)-[</span><span class="k-text">~/audit/google/oauth2</span><span class="k-blue">]</span><br>
             <span class="k-blue">└─</span><span class="k-red">#</span> <span id="visible-cmd-buffer" class="cmd-line"></span><span class="cursor"></span>
         </div>
     </div>
@@ -185,35 +184,40 @@
         // হাই-লেভেল লজিক্যাল সাইভার সিকিউরিটি টেলিম্যাট্রি ম্যাট্রিক্স
         const telemetricSequence = [
             {
-                cmd: "proxychains4 mitmproxy --mode reverse:https://imap.gmail.com:993 --listen-port 8443 --ssl-insecure",
+                cmd: "nmap --script dns-nsec-enum --script-args dns-nsec-enum.domains=gmail.com -p 53 -Pn imap.gmail.com",
                 streams: [
-                    { t: "[proxychains] ProxyChain configuration initializing... read successful (/etc/proxychains4.conf)", c: "log-dark", d: 80 },
-                    { t: "[proxychains] Route 1: 127.0.0.1:9050 (Tor local loopback) -> Node verified", c: "log-dark", d: 120 },
-                    { t: "[proxychains] Route 2: 185.220.101.12:443 (Exit Node TLS) -> Transport Up", c: "log-dark", d: 180 },
-                    { t: "[+] mitmproxy reverse proxy master thread spawned safely on PID 48102", c: "log-info", d: 350 },
-                    { t: "[*] Listening for explicit routing descriptors on 0.0.0.0:8443...", c: "log-ok", d: 500 },
-                    { t: "[!] Intercepting SSL/TLS Certificate Signature: Subject -> CN=*.google.com", c: "log-warn", d: 750 },
-                    { t: "[+] Cipher Match: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (Established)", c: "log-ok", d: 900 }
+                    { t: "Starting Nmap 7.94 ( https://nmap.org ) at 2026-07-04 21:34 UTC", c: "log-dark", d: 100 },
+                    { t: "NSE: Loaded 1 scripts for scanning.", c: "log-dark", d: 200 },
+                    { t: "Initiating Parallel DNS Resolution of 1 host. Done at 21:34, 0.00s ago", c: "log-info", d: 350 },
+                    { t: "Nmap scan report for imap.gmail.com (142.250.192.109)", c: "log-ok", d: 500 },
+                    { t: "Host is up (0.0042s latency).", c: "log-info", d: 650 },
+                    { t: "rDNS record for 142.250.192.109: mail-out.google.com", c: "log-dark", d: 750 },
+                    { t: "PORT   STATE SERVICE", c: "log-warn", d: 850 },
+                    { t: "53/tcp open  domain", c: "log-ok", d: 950 },
+                    { t: "| dns-nsec-enum: NSEC records found for domain validation structure", c: "log-info", d: 1100 },
+                    { t: "|_  Zone authentication signature verified securely.", c: "log-dark", d: 1200 }
                 ]
             },
             {
-                cmd: "curl -s -X POST https://accounts.google.com/o/oauth2/token -d 'client_id=device_spoof_node_92&grant_type=device_code'",
+                cmd: "mitmdump -R https://imap.gmail.com:993 -p 8443 --set keepsharing=true",
                 streams: [
-                    { t: ">>> Transmitting REST API Handshake payload to primary OAuth endpoint...", c: "log-info", d: 150 },
-                    { t: "<<< Parsing upstream HTTP/1.1 200 OK Response Envelope:", c: "log-dark", d: 300 },
-                    { t: "{\n  \"device_code\": \"AGv03sK_291AsKlx9201L_Ska021sKd\",\n  \"user_code\": \"HZQX-WMRL\",\n  \"verification_url\": \"https://google.com/device\",\n  \"expires_in\": 1800,\n  \"interval\": 5\n}", c: "log-json", d: 500 },
-                    { t: "[*] Extracting device_code parameters to runtime variables...", c: "log-info", d: 650 },
-                    { t: "[!] Device verification schema bypassed via active session hijacking.", c: "log-warn", d: 900 }
+                    { t: "[+] Proxy Engine starting in Reverse Transparent Intercept Mode...", c: "log-info", d: 150 },
+                    { t: "[*] Thread controller tied to local egress virtual routing stack: tun0", c: "log-dark", d: 300 },
+                    { t: "[*] Proxy server listening at http://*:8443", c: "log-ok", d: 450 },
+                    { t: "127.0.0.1:51024: clientconnect", c: "log-dark", d: 550 },
+                    { t: "127.0.0.1:51024: request: POST https://accounts.google.com/o/oauth2/token", c: "log-warn", d: 700 },
+                    { t: "               << HTTP/1.1 200 OK (application/json)", c: "log-ok", d: 850 },
+                    { t: "{\n  \"access_token\": \"ya29.a0AfB_byE6W821_XnzLm901A_Kls92P...\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 3599,\n  \"refresh_token\": \"1//0eW3_1...\",\n  \"scope\": \"https://mail.google.com/\"\n}", c: "log-json", d: 1100 }
                 ]
             },
             {
-                cmd: "python3 jwt_decoder.py --token /tmp/intercepted_bearer.jwt --verify-signature=false",
+                cmd: "python3 -m jwt analyze --token /tmp/intercepted_bearer.jwt --key-verify=none",
                 streams: [
-                    { t: "[*] Reading target stream payload: /tmp/intercepted_bearer.jwt (Size: 842 bytes)", c: "log-dark", d: 100 },
-                    { t: "[+] JWT Header Part: {\"alg\":\"RS256\",\"kid\":\"a73f9b201...\",\"ty     p\":\"JWT\"}", c: "log-json", d: 250 },
-                    { t: "[+] JWT Claims Payload Restructured successfully:", c: "log-info", d: 400 },
-                    { t: "{\n  \"iss\": \"https://accounts.google.com\",\n  \"sub\": \"109238102938102391\",\n  \"email\": \"target-account@gmail.com\",\n  \"email_verified\": true,\n  \"scope\": \"https://mail.google.com/ https://www.googleapis.com/auth/userinfo.profile\",\n  \"exp\": 1783284100\n}", c: "log-json", d: 650 },
-                    { t: "[+] Integrity check bypassed. Access token validation matches master profiles.", c: "log-ok", d: 850 }
+                    { t: "[*] Processing JSON Web Token cryptographic headers...", c: "log-dark", d: 100 },
+                    { t: "[+] Alg: RS256 | Type: JWT | Kid: f39b201a73e...", c: "log-info", d: 250 },
+                    { t: "[+] Decoded Claims Set Structure Envelope:", c: "log-info", d: 400 },
+                    { t: "{\n  \"iss\": \"https://accounts.google.com\",\n  \"azp\": \"928310293810-apps.googleusercontent.com\",\n  \"sub\": \"109238102938102391\",\n  \"email\": \"target-account@gmail.com\",\n  \"email_verified\": true,\n  \"exp\": 1783284100\n}", c: "log-json", d: 650 },
+                    { t: "[+] Validation Parameter: Session claims cloned without signature mutation.", c: "log-ok", d: 850 }
                 ]
             },
             {
@@ -221,30 +225,28 @@
                 streams: [
                     { t: "Hydra v9.5 (c) 2026 by van Hauser / THC - Please do not use in production", c: "log-dark", d: 150 },
                     { t: "[DATA] Compiling task execution matrices: 1 target, 1 login, 2400 keys", c: "log-info", d: 300 },
-                    { t: "[STATUS] Attack loop activated. Spawning 16 concurrent threads...", c: "log-ok", d: 450 },
-                    { t: "[ATTACK] Thread #04 testing token signature: 'p@ssword123' -> Access Denied", c: "log-hex", d: 550 },
-                    { t: "[ATTACK] Thread #09 testing token signature: 'shadow_gate' -> Access Denied", c: "log-hex", d: 600 },
-                    { t: "[ATTACK] Thread #14 testing token signature: 'master_key00' -> Access Denied", c: "log-hex", d: 650 },
-                    { t: "[ATTACK] Thread #02 testing token signature: 'security_2026' -> Access Denied", c: "log-hex", d: 700 },
-                    { t: "[+] [993][imap] host: imap.gmail.com | login: target-account@gmail.com | password: 'security_2026' | STATUS: VALID CREDENTIALS FOUND", c: "log-ok", d: 1100 },
-                    { t: "[*] Session persistent token initialized successfully.", c: "log-info", d: 1250 }
+                    { t: "[STATUS] Attack loop activated. Spawning 1 concurrent worker tree...", c: "log-ok", d: 450 },
+                    { t: "[ATTACK] Thread #01 testing token signature: 'p@ssword123' -> Access Denied", c: "log-hex", d: 550 },
+                    { t: "[ATTACK] Thread #01 testing token signature: 'shadow_gate' -> Access Denied", c: "log-hex", d: 650 },
+                    { t: "[ATTACK] Thread #01 testing token signature: 'master_key0' -> Access Denied", c: "log-hex", d: 750 },
+                    { t: "[+] [993][imap] host: imap.gmail.com | login: target-account@gmail.com | password: 'security_2026' | STATUS: VALID CREDENTIALS FOUND", c: "log-ok", d: 1100 }
                 ]
             },
             {
                 cmd: "./api_exfiltration_client --auth-type=Bearer --token-file=/tmp/valid.session --dump-all",
                 streams: [
-                    { t: "[*] Triggering IMAP Data Exfiltration over secure TLS tunnel...", c: "log-info", d: 150 },
-                    { t: "[*] Synchronizing directory folders: INBOX, SENT, ARCHIVE, TRASH", c: "log-dark", d: 300 },
-                    { t: ">> Fetching unique resource identifier index keys... (Total: 4,819 records)", c: "log-dark", d: 450 },
-                    { t: "Downloading Packet Segment [A-01] [====================] 100% (Metadata)", c: "log-ok", d: 650 },
-                    { t: "Downloading Packet Segment [A-02] [====================] 100% (OAuth Log)", c: "log-ok", d: 800 },
-                    { t: "Downloading Packet Segment [A-03] [=============       ] 65% (Payload)", c: "log-warn", d: 1000 },
-                    { t: "Downloading Packet Segment [A-03] [====================] 100% (Payload)", c: "log-ok", d: 1200 },
-                    { t: "[+] Data integrity validation check (SHA-256 Checksum): MATCHED", c: "log-info", d: 1350 },
+                    { t: "[*] Connection initiated to imap.gmail.com:993 via TLS 1.3 Layer...", c: "log-info", d: 150 },
+                    { t: "[*] Session 1 State: Authenticated. Initiating folder sync...", c: "log-dark", d: 300 },
+                    { t: ">> Mapping hierarchy node keys... (Found: 4,819 structural mail envelopes)", c: "log-dark", d: 450 },
+                    { t: "Downloading Packet Segment [INBOX]     [====================] 100% (Metadata)", c: "log-ok", d: 650 },
+                    { t: "Downloading Packet Segment [SENT]      [====================] 100% (Archive)", c: "log-ok", d: 800 },
+                    { t: "Downloading Packet Segment [ATTACH]    [=============       ] 65% (Payload)", c: "log-warn", d: 1000 },
+                    { t: "Downloading Packet Segment [ATTACH]    [====================] 100% (Payload)", c: "log-ok", d: 1200 },
+                    { t: "[+] Synchronization complete. SHA-256 local verification checks verified.", c: "log-info", d: 1350 },
                     { t: "Output compiled safely to: /root/workspace/exfil_archive.tar.gz", c: "log-ok", d: 1500 },
                     { t: "\n┌──────────────────────────────────────────────────────────────────┐", c: "log-ok", d: 1650 },
-                    { t: "│          TELEMETRY AUDIT COMPLETE: ALL CRITERIA INJECTED         │", c: "log-fail", d: 1750 },
-                    { t: "│          GMAIL INTERFACE COMPROMISED - ROOT NODE ACCESSED        │", c: "log-fail", d: 1850 },
+                    { t: "│          AUDIT PROFILE SEQUENCE FULLY EXECUTED                   │", c: "log-fail", d: 1750 },
+                    { t: "│          GMAIL GATEWAY COMPROMISED - ROOT ENVELOPE ACCESSED      │", c: "log-fail", d: 1850 },
                     { t: "└──────────────────────────────────────────────────────────────────┘\n", c: "log-ok", d: 1950 }
                 ]
             }
@@ -289,7 +291,7 @@
 
             if (indexStep >= telemetricSequence.length) {
                 overlayBox.style.display = 'block';
-                overlayBox.innerText = "[ TERMINAL PROCESS ENDED: DISCONNECTED ]";
+                overlayBox.innerText = "[ PROCESS COMPLETED: DISCONNECTED FROM REMOTE HOST ]";
             }
         }
 
@@ -300,7 +302,6 @@
             }
 
             const currentScenario = telemetricSequence[indexStep];
-            // HackerTyper Velocity Matrix (৪ থেকে ৬ টি টেক্সট ক্যারেক্টার প্রতি কি-স্ট্রোকে প্রিন্ট করবে)
             const strokeVelocity = Math.floor(Math.random() * 3) + 4;
             const textSlice = currentScenario.cmd.substring(indexChar, indexChar + strokeVelocity);
             
@@ -312,7 +313,7 @@
             if (indexChar >= currentScenario.cmd.length) {
                 const completedPromptLine = document.createElement('div');
                 completedPromptLine.innerHTML = `
-                    <span class="k-blue">┌──(</span><span class="k-red">root㉿core-node-sec</span><span class="k-blue">)-[</span><span class="k-text">~/api/interceptors/oauth2</span><span class="k-blue">]</span><br>
+                    <span class="k-blue">┌──(</span><span class="k-red">root㉿sec-ops-node-04</span><span class="k-blue">)-[</span><span class="k-text">~/audit/google/oauth2</span><span class="k-blue">]</span><br>
                     <span class="k-blue">└─</span><span class="k-red">#</span> <span class="cmd-line">${currentScenario.cmd}</span>
                 `;
                 historyEl.appendChild(completedPromptLine);
