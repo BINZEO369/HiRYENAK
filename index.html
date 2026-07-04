@@ -80,10 +80,6 @@
       background: #58a6ff;
       border-color: #79c0ff;
     }
-    .panel-icon {
-      font-size: 13px;
-      margin: 0 2px;
-    }
     .stat-active {
       color: #56d364;
       font-weight: 500;
@@ -115,10 +111,6 @@
       align-items: center;
       gap: 8px;
     }
-    .titlebar-icon {
-      color: #58a6ff;
-      font-size: 14px;
-    }
     .titlebar-buttons {
       display: flex;
       gap: 8px;
@@ -149,7 +141,7 @@
       line-height: 1.45;
       word-break: break-word;
       background: #0d1117;
-      background-image: 
+      background-image:
         radial-gradient(ellipse at 50% 0%, rgba(88,166,255,0.03) 0%, transparent 60%),
         radial-gradient(ellipse at 80% 100%, rgba(86,211,100,0.02) 0%, transparent 50%);
     }
@@ -206,31 +198,6 @@
       50% { opacity: 0; }
     }
 
-    #hidden-input {
-      position: absolute;
-      opacity: 0;
-      top: -1000px;
-      left: -1000px;
-    }
-
-    #status-overlay {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: #8b949e;
-      font-size: 11px;
-      background: rgba(22,27,34,0.95);
-      padding: 10px 22px;
-      border-radius: 6px;
-      border: 1px solid #30363d;
-      z-index: 200;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.8);
-      pointer-events: none;
-      text-align: center;
-    }
-
     ::-webkit-scrollbar {
       width: 8px;
     }
@@ -246,12 +213,12 @@
     }
   </style>
 </head>
-<body onclick="focusTerminal()">
+<body>
 
   <!-- Kali XFCE Panel -->
   <div id="kali-panel">
     <div class="panel-left">
-      <span style="font-weight:600;color:#f0f6fc;">🐉 Kali</span>
+      <span style="font-weight:600;color:#f0f6fc;">Kali</span>
       <span>Applications</span>
       <span>Places</span>
       <span style="background:#2d333b;">Terminal</span>
@@ -265,10 +232,10 @@
       </div>
     </div>
     <div class="panel-right">
-      <span>🌐 <span class="stat-active">tun0</span></span>
-      <span>📡 <span class="stat-active">TLS1.3</span></span>
-      <span>💾 <span class="stat-warn">1.4G</span></span>
-      <span>🔒 <span class="stat-active">AES256</span></span>
+      <span>IF: <span class="stat-active">tun0</span></span>
+      <span>ENC: <span class="stat-active">TLS1.3</span></span>
+      <span>MEM: <span class="stat-warn">1.4G</span></span>
+      <span>CIPHER: <span class="stat-active">AES256</span></span>
       <span id="live-clock" style="font-weight:600;">21:34:50</span>
     </div>
   </div>
@@ -276,7 +243,7 @@
   <!-- Terminal Window Title Bar -->
   <div id="terminal-titlebar">
     <div class="titlebar-left">
-      <span class="titlebar-icon">⬤</span>
+      <span style="color:#58a6ff;font-size:14px;">&dtrif;</span>
       <span>root@sec-ops-node-04: ~/audit/google/oauth2</span>
     </div>
     <div class="titlebar-buttons">
@@ -291,8 +258,8 @@
     <div class="ascii-banner">
  ██╗  ██╗ █████╗ ██╗     ██╗    ███████╗███████╗ ██████╗     ██████╗ ██████╗ ███████╗
  ██║ ██╔╝██╔══██╗██║     ██║    ██╔════╝██╔════╝██╔════╝    ██╔═══██╗██╔══██╗██╔════╝
- █████╔╝ ███████║██║     ██║    ███████╗█████╗  ██║         ██║   ██║██████╔╝█████╗  
- ██╔═██╗ ██╔══██║██║     ██║    ╚════██║██╔══╝  ██║         ██║   ██║██╔═══╝ ██╔══╝  
+ █████╔╝ ███████║██║     ██║    ███████╗█████╗  ██║         ██║   ██║██████╔╝█████╗
+ ██╔═██╗ ██╔══██║██║     ██║    ╚════██║██╔══╝  ██║         ██║   ██║██╔═══╝ ██╔══╝
  ██║  ██╗██║  ██║███████╗██║    ███████║███████╗╚██████╗    ╚██████╔╝██║     ███████╗
  ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝    ╚══════╝╚══════╝ ╚═════╝     ╚═════╝ ╚═╝     ╚══════╝
                           [ RED-TEAM OPS :: OAUTH2 TOKEN INTERCEPTION FRAMEWORK v4.2 ]
@@ -305,10 +272,6 @@
       <span class="kali-blue">└─</span><span class="kali-red">#</span> <span id="visible-cmd-buffer" class="cmd-line"></span><span class="cursor-block"></span>
     </div>
   </div>
-
-  <div id="status-overlay">⌨️ টার্মিনালে ক্লিক করে টাইপ করা শুরু করুন</div>
-
-  <input type="text" id="hidden-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
 
   <script>
     (function() {
@@ -448,45 +411,54 @@
             { t: "[21:41:52] Compressing output archive...", c: "log-info", d: 1980 },
             { t: "[21:41:53] Archive created: /mnt/data/exfil/gmail_full_20260704_2141.tar.gz (47.8 MB)", c: "log-success", d: 2120 },
             { t: "[21:41:53] SHA-256: a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2", c: "log-debug", d: 2260 },
-            { t: "\n╔══════════════════════════════════════════════════════════════════════╗", c: "log-error", d: 2420 },
-            { t: "║  ⚠ CRITICAL: GMAIL OAUTH2 GATEWAY FULLY COMPROMISED               ║", c: "log-error", d: 2540 },
-            { t: "║  ALL EMAIL DATA EXFILTRATED SUCCESSFULLY                          ║", c: "log-error", d: 2660 },
-            { t: "║  TARGET: target.account@gmail.com                                ║", c: "log-error", d: 2780 },
-            { t: "║  TOTAL MESSAGES: 8,247 | ARCHIVE: 47.8 MB                        ║", c: "log-error", d: 2900 },
-            { t: "╚══════════════════════════════════════════════════════════════════════╝\n", c: "log-error", d: 3040 }
+            { t: "", c: "log-debug", d: 2350 },
+            { t: "+======================================================================+", c: "log-error", d: 2450 },
+            { t: "|  CRITICAL: GMAIL OAUTH2 GATEWAY FULLY COMPROMISED                   |", c: "log-error", d: 2570 },
+            { t: "|  ALL EMAIL DATA EXFILTRATED SUCCESSFULLY                            |", c: "log-error", d: 2690 },
+            { t: "|  TARGET: target.account@gmail.com                                  |", c: "log-error", d: 2810 },
+            { t: "|  TOTAL MESSAGES: 8,247 | ARCHIVE SIZE: 47.8 MB                     |", c: "log-error", d: 2930 },
+            { t: "+======================================================================+", c: "log-error", d: 3070 },
+            { t: "", c: "log-debug", d: 3150 }
           ]
         }
       ];
 
       let indexStep = 0;
-      let indexChar = 0;
-      let streamingActive = false;
-
-      const hiddenInput = document.getElementById('hidden-input');
-      const visibleCmdBuffer = document.getElementById('visible-cmd-buffer');
+      let autoPlayActive = true;
       const historyEl = document.getElementById('terminal-history');
-      const overlayBox = document.getElementById('status-overlay');
-
-      function focusTerminal() {
-        hiddenInput.focus({ preventScroll: true });
-        if (overlayBox.style.display !== 'none') {
-          overlayBox.style.display = 'none';
-        }
-      }
+      const visibleCmdBuffer = document.getElementById('visible-cmd-buffer');
+      const cursorBlock = document.querySelector('.cursor-block');
 
       function forceScroll() {
         const viewport = document.getElementById('terminal-viewport');
         viewport.scrollTop = viewport.scrollHeight;
       }
 
+      function getTimestamp() {
+        const now = new Date();
+        return now.toTimeString().split(' ')[0];
+      }
+
+      async function typeCommand(cmdText) {
+        visibleCmdBuffer.innerText = '';
+        for (let i = 0; i < cmdText.length; i++) {
+          visibleCmdBuffer.innerText += cmdText[i];
+          await new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * 25) + 15));
+          forceScroll();
+        }
+      }
+
       async function streamLogOutput(streams) {
-        streamingActive = true;
         for (let entry of streams) {
           await new Promise(resolve => setTimeout(resolve, entry.d));
           const lineDiv = document.createElement('div');
           lineDiv.className = entry.c;
-          const timeStr = new Date().toTimeString().split(' ')[0];
-          lineDiv.innerHTML = `<span class="log-timestamp">[${timeStr}]</span>${entry.t}`;
+          const timeStr = getTimestamp();
+          if (entry.t === '') {
+            lineDiv.innerHTML = '&nbsp;';
+          } else {
+            lineDiv.innerHTML = `<span class="log-timestamp">[${timeStr}]</span>${entry.t}`;
+          }
           historyEl.appendChild(lineDiv);
           forceScroll();
         }
@@ -494,59 +466,55 @@
         const spacer = document.createElement('br');
         historyEl.appendChild(spacer);
         forceScroll();
-
-        indexStep++;
-        indexChar = 0;
-        visibleCmdBuffer.innerText = "";
-        streamingActive = false;
-
-        if (indexStep >= telemetricSequence.length) {
-          overlayBox.style.display = 'block';
-          overlayBox.innerHTML = '✅ <b>অডিট সম্পন্ন:</b> সমস্ত ফেজ সফলভাবে সম্পাদিত হয়েছে | রিমোট সংযোগ বিচ্ছিন্ন';
-        }
       }
 
-      hiddenInput.addEventListener('input', (e) => {
-        if (streamingActive || indexStep >= telemetricSequence.length) {
-          hiddenInput.value = "";
+      async function executeStep() {
+        if (indexStep >= telemetricSequence.length) {
+          autoPlayActive = false;
+          cursorBlock.style.display = 'none';
+          visibleCmdBuffer.innerText = '';
           return;
         }
 
         const currentScenario = telemetricSequence[indexStep];
-        const charsPerStroke = Math.floor(Math.random() * 5) + 6;
-        const nextSlice = currentScenario.cmd.substring(indexChar, indexChar + charsPerStroke);
 
-        if (nextSlice) {
-          visibleCmdBuffer.innerText += nextSlice;
-          indexChar += charsPerStroke;
-        }
+        // Type the command
+        await typeCommand(currentScenario.cmd);
+        await new Promise(resolve => setTimeout(resolve, 300));
 
-        hiddenInput.value = "";
+        // Add completed prompt to history
+        const promptDiv = document.createElement('div');
+        promptDiv.innerHTML = `
+          <span class="kali-blue">┌──(</span><span class="kali-red">root㉿sec-ops-node-04</span><span class="kali-blue">)-[</span><span class="kali-path">~/audit/google/oauth2</span><span class="kali-blue">]</span><br>
+          <span class="kali-blue">└─</span><span class="kali-red">#</span> <span class="cmd-line">${currentScenario.cmd}</span>
+        `;
+        historyEl.appendChild(promptDiv);
+        visibleCmdBuffer.innerText = '';
         forceScroll();
 
-        if (indexChar >= currentScenario.cmd.length) {
-          const promptDiv = document.createElement('div');
-          promptDiv.innerHTML = `
-            <span class="kali-blue">┌──(</span><span class="kali-red">root㉿sec-ops-node-04</span><span class="kali-blue">)-[</span><span class="kali-path">~/audit/google/oauth2</span><span class="kali-blue">]</span><br>
-            <span class="kali-blue">└─</span><span class="kali-red">#</span> <span class="cmd-line">${currentScenario.cmd}</span>
-          `;
-          historyEl.appendChild(promptDiv);
-          visibleCmdBuffer.innerText = "";
-          streamLogOutput(currentScenario.streams);
-        }
-      });
+        // Stream the output
+        await streamLogOutput(currentScenario.streams);
 
-      document.addEventListener('keydown', (e) => {
-        focusTerminal();
-        if (e.key === ' ' || e.key.startsWith('Arrow')) {
-          e.preventDefault();
-        }
-      });
+        indexStep++;
 
-      document.addEventListener('touchstart', focusTerminal);
-      window.onload = () => {
-        setTimeout(focusTerminal, 400);
-      };
+        if (indexStep >= telemetricSequence.length) {
+          autoPlayActive = false;
+          cursorBlock.style.display = 'none';
+          visibleCmdBuffer.innerText = '';
+        }
+
+        // Auto continue
+        if (autoPlayActive && indexStep < telemetricSequence.length) {
+          await new Promise(resolve => setTimeout(resolve, 800));
+          executeStep();
+        }
+      }
+
+      // Start the automation
+      setTimeout(() => {
+        executeStep();
+      }, 1500);
+
     })();
   </script>
 </body>
