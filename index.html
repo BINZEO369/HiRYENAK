@@ -3,215 +3,252 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hacking Simulator Dashboard</title>
+    <title>Bee HAPPY LOVE // Root Center</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+        :root {
+            --bg-color: #050505;
+            --main-green: #00ff41;
+            --danger-red: #ff003c;
+            --love-pink: #ff007f;
+            --panel-bg: rgba(0, 20, 0, 0.7);
         }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            background-color: #050505;
-            color: #00ff00;
-            font-family: 'Courier New', Courier, monospace;
-            overflow: hidden;
+            background-color: var(--bg-color);
+            color: var(--main-green);
+            font-family: 'Share Tech Mono', monospace;
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Glitch & CRT Effect */
+        body::after {
+            content: " "; display: block; position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 10; background-size: 100% 2px, 3px 100%; pointer-events: none;
         }
 
         header {
+            background: #111;
+            padding: 15px 20px;
             text-align: center;
-            padding: 15px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            border-bottom: 2px solid #00ff00;
-            text-shadow: 0 0 10px #00ff00;
+            border-bottom: 2px solid var(--love-pink);
+            box-shadow: 0 0 20px rgba(255, 0, 127, 0.4);
+            z-index: 5;
+            position: relative;
         }
 
+        header h1 {
+            color: var(--love-pink);
+            font-size: 1.8rem;
+            text-shadow: 0 0 10px var(--love-pink), 0 0 20px var(--danger-red);
+            letter-spacing: 3px;
+        }
+        
+        .sys-status {
+            color: var(--danger-red);
+            font-size: 0.9rem;
+            animation: blink 0.8s infinite;
+            margin-top: 5px;
+        }
+
+        @keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+
+        /* Mobile Friendly Responsive Grid */
         .dashboard {
-            display: flex;
-            flex: 1;
-            padding: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 10px;
+            padding: 10px;
+            flex: 1;
+            overflow-y: auto;
+            z-index: 5;
+            position: relative;
         }
 
         .panel {
-            border: 1px solid #00ff00;
-            background: rgba(0, 255, 0, 0.05);
-            padding: 15px;
-            flex: 1;
+            background: var(--panel-bg);
+            border: 1px solid var(--main-green);
             display: flex;
             flex-direction: column;
-            box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.2);
+            height: 250px; /* Fixed height for neat grid */
+            box-shadow: inset 0 0 15px rgba(0, 255, 65, 0.1);
         }
 
-        .panel h2 {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-            border-bottom: 1px dashed #00ff00;
-            padding-bottom: 5px;
-            color: #fff;
-            text-shadow: 0 0 5px #00ff00;
+        .panel.danger {
+            border-color: var(--danger-red);
+            box-shadow: inset 0 0 15px rgba(255, 0, 60, 0.2);
         }
 
-        .content-box {
-            flex: 1;
-            overflow-y: hidden;
+        .panel-header {
+            background: var(--main-green);
+            color: #000;
+            padding: 8px 10px;
+            font-weight: bold;
             font-size: 0.9rem;
+            text-transform: uppercase;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .panel.danger .panel-header {
+            background: var(--danger-red);
+            color: #fff;
+        }
+
+        .content {
+            padding: 10px;
+            overflow-y: hidden;
+            flex: 1;
+            font-size: 0.85rem;
             line-height: 1.4;
             word-wrap: break-word;
         }
 
-        /* Stats Panel */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 20px;
-        }
+        .text-pink { color: var(--love-pink); }
+        .text-red { color: var(--danger-red); }
+        .text-cyan { color: #00e5ff; }
+        .text-yellow { color: #ffcc00; }
+        .hex { opacity: 0.7; font-size: 0.75rem; }
 
-        .stat-item {
-            text-align: center;
-            padding: 15px;
-            border: 1px solid #004400;
-            background: #0a0a0a;
-        }
+        /* Custom Scrollbar for dashboard container */
+        .dashboard::-webkit-scrollbar { width: 5px; }
+        .dashboard::-webkit-scrollbar-thumb { background: var(--love-pink); }
 
-        .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #00ff00;
-            text-shadow: 0 0 10px #00ff00;
-            margin-top: 10px;
-        }
-
-        .warning {
-            color: #ff0000;
-            text-shadow: 0 0 5px #ff0000;
-        }
-
-        ::-webkit-scrollbar {
-            width: 5px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #00ff00;
-        }
     </style>
 </head>
 <body>
 
     <header>
-        [ SYSTEM OVERRIDE ] // Global Threat Simulator
+        <h1>[ SYSTEM: Bee HAPPY LOVE ]</h1>
+        <div class="sys-status">GLOBAL INFECTION MATRIX // MULTIPLE BREACHES DETECTED</div>
     </header>
 
     <div class="dashboard">
+        
+        <!-- Live Keylogger Intercept -->
         <div class="panel">
-            <h2>> Terminal_Output</h2>
-            <div id="terminal" class="content-box"></div>
+            <div class="panel-header"><span>> Keylogger_Stream</span> <span class="text-pink">REC O</span></div>
+            <div id="keylog" class="content text-yellow"></div>
         </div>
 
-        <div class="panel">
-            <h2>> System_Metrics</h2>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div>Data Decrypted (TB)</div>
-                    <div id="dataStat" class="stat-value">0</div>
-                </div>
-                <div class="stat-item">
-                    <div>Passwords Cracked</div>
-                    <div id="passStat" class="stat-value">0</div>
-                </div>
-                <div class="stat-item">
-                    <div>Active Connections</div>
-                    <div id="connStat" class="stat-value">1,024</div>
-                </div>
-                <div class="stat-item warning">
-                    <div>Threat Level</div>
-                    <div class="stat-value warning">CRITICAL</div>
-                </div>
-            </div>
+        <!-- Botnet Shell Execution -->
+        <div class="panel danger">
+            <div class="panel-header">> Auto_Exploit_Shell</div>
+            <div id="shellLogs" class="content"></div>
         </div>
 
+        <!-- Global IP Tracking -->
         <div class="panel">
-            <h2>> Attack_Logs (Malware & Email)</h2>
-            <div id="logs" class="content-box"></div>
+            <div class="panel-header">> Sat_Target_Tracking</div>
+            <div id="satTracking" class="content"></div>
         </div>
+
+        <!-- Ransomware BTC Wallet -->
+        <div class="panel danger">
+            <div class="panel-header"><span>> Ransom_Wallet (BTC)</span> <span>ENCRYPTED</span></div>
+            <div id="btcWallet" class="content text-cyan"></div>
+        </div>
+
+        <!-- Hex Packet Sniffer -->
+        <div class="panel">
+            <div class="panel-header">> Deep_Packet_Sniffer</div>
+            <div id="hexSniff" class="content hex"></div>
+        </div>
+
+        <!-- Mass Phishing & Malware spread -->
+        <div class="panel">
+            <div class="panel-header">> Bee_Happy_Payload_Dist</div>
+            <div id="payloadDist" class="content"></div>
+        </div>
+
     </div>
 
     <script>
-        // 1. Terminal Data Simulation
-        const terminal = document.getElementById('terminal');
-        const hexChars = '0123456789ABCDEF';
+        // Utilities
+        const rIP = () => `${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}`;
+        const rHex = (len) => [...Array(len)].map(() => Math.floor(Math.random()*16).toString(16).toUpperCase()).join('');
         
-        function generateRandomCode() {
-            let line = '';
-            const types = [
-                () => `Connecting to ${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}:80...`,
-                () => `Bypassing firewall... [${Math.random() > 0.1 ? 'SUCCESS' : 'RETRYING'}]`,
-                () => `Fetching data block 0x${Math.floor(Math.random() * 1000000).toString(16).toUpperCase()}...`,
-                () => {
-                    let hex = '';
-                    for(let i=0; i<40; i++) hex += hexChars[Math.floor(Math.random() * 16)];
-                    return hex;
-                }
-            ];
-            
+        function addLog(id, text, maxLines = 15) {
+            const el = document.getElementById(id);
             const p = document.createElement('div');
-            p.textContent = types[Math.floor(Math.random() * types.length)]();
-            terminal.appendChild(p);
-            
-            if (terminal.childNodes.length > 50) {
-                terminal.removeChild(terminal.firstChild);
-            }
-            terminal.scrollTop = terminal.scrollHeight;
+            p.innerHTML = text;
+            el.appendChild(p);
+            if (el.childNodes.length > maxLines) el.removeChild(el.firstChild);
+            el.scrollTop = el.scrollHeight;
         }
 
-        setInterval(generateRandomCode, 50);
-
-        // 2. Attack Logs (Emails & Malware)
-        const logs = document.getElementById('logs');
-        const attackTypes = [
-            "Injecting Ransomware payload -> target_server_01",
-            "Phishing Email sent to -> admin@corp.com",
-            "DDoS Attack initiated -> Port 8080",
-            "Malware deployed successfully -> C:\\Windows\\System32\\svchost.exe",
-            "Spoofing MAC address...",
-            "Sending trojan via attachment -> invoice_urgent.pdf",
-            "Extracting user credentials..."
+        // 1. Keylogger Stream (Typing simulation)
+        const keystrokes = [
+            "facebook.com/login... user: admin@corp.com pass: <span class='text-red'>ILoveYou2023!</span> [ENTER]",
+            "paypal.com... auth_token: <span class='text-pink'>b33h4ppy</span>",
+            "bankofamerica.com/transfer... acc: 9832**** routing: 334*** [ENTER]",
+            "gmail.com... compose... subject: 'Confidential'...",
+            "cmd.exe... type: 'disable_antivirus.bat' [ENTER]"
         ];
-
-        function generateLogs() {
-            const p = document.createElement('div');
-            const isWarning = Math.random() > 0.8;
-            
-            p.textContent = `[${new Date().toLocaleTimeString()}] ${attackTypes[Math.floor(Math.random() * attackTypes.length)]}`;
-            if (isWarning) p.style.color = "#ff0000";
-            
-            logs.appendChild(p);
-            
-            if (logs.childNodes.length > 30) {
-                logs.removeChild(logs.firstChild);
-            }
-            logs.scrollTop = logs.scrollHeight;
-        }
-
-        setInterval(generateLogs, 800);
-
-        // 3. Update Stats
-        let dataDecrypted = 0;
-        let passwordsCracked = 0;
-        
         setInterval(() => {
-            dataDecrypted += Math.random() * 5;
-            passwordsCracked += Math.floor(Math.random() * 50);
-            
-            document.getElementById('dataStat').innerText = dataDecrypted.toFixed(2);
-            document.getElementById('passStat').innerText = passwordsCracked.toLocaleString();
-            document.getElementById('connStat').innerText = (Math.floor(Math.random() * 5000) + 1000).toLocaleString();
-        }, 300);
+            addLog('keylog', `[Intercept] ${keystrokes[Math.floor(Math.random() * keystrokes.length)]}`, 10);
+        }, 1200);
+
+        // 2. Auto Exploit Shell
+        const shellCmds = [
+            `[*] Injecting Bee_HAPPY_LOVE.dll into PID ${Math.floor(Math.random()*9000)}`,
+            `[+] Privilege Escalation Successful -> NT AUTHORITY\\SYSTEM`,
+            `[-] Bypassing Windows Defender... <span class='text-pink'>SUCCESS</span>`,
+            `[*] Exfiltrating SAM database from ${rIP()}`,
+            `[!] WARNING: Reverse connection dropped, restarting listener...`
+        ];
+        setInterval(() => {
+            addLog('shellLogs', shellCmds[Math.floor(Math.random() * shellCmds.length)], 12);
+        }, 600);
+
+        // 3. Satellite Target Tracking (Lat/Long + IP)
+        setInterval(() => {
+            let lat = (Math.random() * 180 - 90).toFixed(4);
+            let lon = (Math.random() * 360 - 180).toFixed(4);
+            let locs = ["Washington DC", "Moscow", "Beijing", "London", "Tokyo", "Berlin", "New York"];
+            let loc = locs[Math.floor(Math.random() * locs.length)];
+            addLog('satTracking', `Locking: ${loc} | IP: <span class='text-red'>${rIP()}</span> | LAT: ${lat} LON: ${lon}`);
+        }, 800);
+
+        // 4. Ransomware BTC Wallet
+        let totalBtc = 142.53;
+        setInterval(() => {
+            let incoming = (Math.random() * 2).toFixed(4);
+            totalBtc += parseFloat(incoming);
+            let btcAddress = `bc1q${rHex(8).toLowerCase()}...${rHex(4).toLowerCase()}`;
+            addLog('btcWallet', `[+] Received: <span class='text-green'>+${incoming} BTC</span> from ${btcAddress}`);
+            addLog('btcWallet', `Total Balance: <span class='text-pink'>${totalBtc.toFixed(4)} BTC</span>`, 8);
+        }, 2000);
+
+        // 5. Hex Deep Packet Sniffer
+        setInterval(() => {
+            let hexStr = `0x${rHex(4)}  `;
+            for(let i=0; i<6; i++) hexStr += rHex(2) + ' ';
+            hexStr += `  ...${Math.random().toString(36).substring(2, 6)}`;
+            addLog('hexSniff', hexStr, 15);
+        }, 100);
+
+        // 6. Payload Distribution
+        const payloads = [
+            `Sending 'Love_Letter.pdf.exe' to target network...`,
+            `Worm spreading via SMBv3 (CVE-2020-0796) -> IP: ${rIP()}`,
+            `Encrypting file system on Node-${Math.floor(Math.random()*999)}... <span class='text-red'>LOCKED</span>`,
+            `Overwriting Master Boot Record (MBR)...`,
+            `Sending spam phishing to 50,000 contacts...`
+        ];
+        setInterval(() => {
+            addLog('payloadDist', `> ${payloads[Math.floor(Math.random() * payloads.length)]}`, 12);
+        }, 900);
+
     </script>
 </body>
 </html>
