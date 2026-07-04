@@ -3,176 +3,335 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Terminal Simulator</title>
+    <title>kali@kali: ~/frameworks/ghost-protocol</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
-            background-color: #000;
-            color: #00ff41;
-            font-family: 'Share Tech Mono', monospace;
-            margin: 0;
-            padding: 10px;
+            background-color: #0c0d12;
+            color: #b2b2b2;
+            font-family: 'Fira Code', monospace;
             height: 100vh;
-            overflow-x: hidden;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
 
-        /* CRT Effect */
-        body::after {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
-            background-size: 100% 2px;
-            pointer-events: none;
-            z-index: 10;
+        /* Kali OS Top Panel Simulator */
+        #os-bar {
+            background-color: #14161d;
+            height: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+            font-size: 11px;
+            color: #8c91a0;
+            border-bottom: 1px solid #222631;
+            user-select: none;
         }
+        .os-left, .os-right { display: flex; align-items: center; gap: 15px; }
+        .sys-load { color: #50fa7b; }
 
-        #terminal {
+        /* Window Header Style (XFCE) */
+        #window-header {
+            background: linear-gradient(to bottom, #2a2e38, #21242c);
+            border-bottom: 1px solid #15171c;
+            padding: 6px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: #c5c9db;
+        }
+        .window-title { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+        .window-buttons { display: flex; gap: 6px; }
+        .btn { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+        .btn-close { background-color: #ff5555; }
+        .btn-min { background-color: #ffb86c; }
+        .btn-max { background-color: #50fa7b; }
+
+        /* Terminal Display Screen */
+        #terminal-body {
             flex-grow: 1;
+            padding: 12px;
             overflow-y: auto;
-            padding-bottom: 20px;
-            font-size: 14px;
-            line-height: 1.5;
+            font-size: 11px;
+            line-height: 1.4;
             word-wrap: break-word;
+            background-color: #0c0d12;
         }
 
-        .cmd { color: #00e5ff; }
-        .success { color: #00ff41; }
-        .error { color: #ff003c; }
-        .warning { color: #ffcc00; }
+        /* Colors matching Kali ZSH Theme */
+        .k-blue { color: #268bd2; font-weight: bold; }
+        .k-red { color: #dc322f; font-weight: bold; }
+        .k-cyan { color: #2aa198; }
+        .k-green { color: #859900; }
+        .cmd-text { color: #ffffff; font-weight: bold; }
+        
+        /* Log Colors */
+        .out-success { color: #50fa7b; }
+        .out-error { color: #ff5555; }
+        .out-warning { color: #ffb86c; }
+        .out-info { color: #8be9fd; }
+        .out-muted { color: #55596a; }
+        .out-hex { color: #44475a; font-size: 10px; }
 
-        /* Hidden input for mobile keyboard */
-        #hiddenInput {
-            position: absolute;
-            opacity: 0;
-            top: -1000px;
+        .kali-logo {
+            color: #268bd2;
+            white-space: pre;
+            font-size: 7px;
+            line-height: 1.1;
+            margin-bottom: 15px;
+            font-weight: bold;
         }
 
-        /* Cursor blinking */
+        /* Cursor */
         .cursor {
             display: inline-block;
             width: 8px;
-            height: 15px;
-            background-color: #00ff41;
-            animation: blink 1s step-end infinite;
+            height: 14px;
+            background-color: #f8f8f2;
+            animation: blink 0.8s step-end infinite;
             vertical-align: middle;
+            margin-left: 3px;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        #hidden-input { position: absolute; opacity: 0; top: -1000px; }
+        
+        #hint-box {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #6272a4;
+            font-size: 11px;
+            background: #14161d;
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: 1px solid #222631;
+            z-index: 100;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.7);
         }
 
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-        /* Mobile instruction */
-        #mobile-hint {
-            color: #555;
-            text-align: center;
-            font-size: 12px;
-            padding: 10px;
-            border-top: 1px solid #333;
-        }
+        ::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body onclick="focusInput()">
+<body onclick="focusTerminal()">
 
-    <div id="terminal"></div>
-    <span class="cursor" id="cursor"></span>
-
-    <div id="mobile-hint">
-        [ স্ক্রিনে ট্যাপ করে কীবোর্ড ওপেন করুন এবং যেকোনো কী (Key) চাপতে থাকুন ]
+    <div id="os-bar">
+        <div class="os-left">
+            <span>Applications</span>
+            <span>Places</span>
+            <span>Terminal</span>
+        </div>
+        <div class="os-right">
+            <span>[VPN: <span class="sys-load">ON</span>]</span>
+            <span>CPU: <span class="sys-load">24%</span></span>
+            <span>RAM: <span class="sys-load">3.1GB/16GB</span></span>
+            <span id="os-clock">21:30</span>
+        </div>
     </div>
 
-    <input type="text" id="hiddenInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    <div id="window-header">
+        <div class="window-title">
+            <span style="color: #268bd2;">⬤</span> root@kali: ~/frameworks/ghost-protocol
+        </div>
+        <div class="window-buttons">
+            <span class="btn btn-min"></span>
+            <span class="btn btn-max"></span>
+            <span class="btn btn-close"></span>
+        </div>
+    </div>
+
+    <div id="terminal-body">
+        <div class="kali-logo">
+  ██████╗ ███████╗██████╗  ██████╗ ██████╗ ███████╗███████╗███████╗███████╗
+  ██╔══██╗██╔════╝██╔══██╗██╔═══██╗██╔══██╗██╔════╝██╔════╝██╔════╝██╔════╝
+  ██████╔╝█████╗  ██████╔╝██║   ██║██████╔╝███████╗█████╗  █████╗  ███████╗
+  ██╔═══╝ ██╔══╝  ██╔══██╗██║   ██║██╔═══╝ ╚════██║██╔══╝  ██╔══╝  ╚════██║
+  ██║     ███████╗██║  ██║╚██████╔╝██║     ███████║███████╗███████╗███████║
+  ╚═╝     ╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚══════╝╚══════╝╚══════╝╚══════╝
+                                              [ INFRASTRUCTURE PENETRATION TOOL v6.1 ]
+        </div>
+        
+        <div id="logs-history"></div>
+        
+        <div id="prompt-line">
+            <span class="k-blue">┌──(</span><span class="k-red">root㉿kali</span><span class="k-blue">)-[</span><span class="k-text">~/frameworks/ghost-protocol</span><span class="k-blue">]</span><br>
+            <span class="k-blue">└─</span><span class="k-red">#</span> <span id="typed-cmd" class="cmd-text"></span><span class="cursor"></span>
+        </div>
+    </div>
+
+    <div id="hint-box">[ স্ক্রিনে যেকোনো জায়গায় ক্লিক বা ট্যাপ করে কী-বোর্ড আনুন এবং টাইপ করুন ]</div>
+    
+    <input type="text" id="hidden-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
 
     <script>
-        // কাল্পনিক হ্যাকিং কমান্ড এবং তার আউটপুট
-        const sequence = [
-            { cmd: "init_connection --target smtp.gmail.com --port 465", out: "[+] Connection established to target server.\n[+] Initiating SSL/TLS handshake... OK.", color: "success" },
-            { cmd: "bypass_auth_gateway -level 4", out: "[!] Warning: High-level firewall detected.\n[!] Rerouting through proxy chains (Russia -> Panama -> Target)...\n[+] Firewall bypassed successfully.", color: "warning" },
-            { cmd: "inject_payload --type sql_blind --user target@gmail.com", out: "[-] Exploit failed. Retrying with Zero-Day payload...\n[+] Payload injected into memory.", color: "error" },
-            { cmd: "extract_hash --db main_users", out: "[+] Extracting data... 100%\n[+] Hash obtained: 0x8F9A2B4C9201F...\n[!] Commencing brute-force attack...", color: "success" },
-            { cmd: "crack_hash --rainbow-table /usr/share/wordlists/rockyou.txt", out: "[!] Cracking... [||||||||||||||||||||] 100%\n[+] Password decrypted: *********", color: "success" },
-            { cmd: "disable_2fa --spoof-token", out: "[!] Intercepting SMS gateway...\n[+] 2FA Token spoofed. Security layer breached.", color: "warning" },
-            { cmd: "grant_root_access", out: "\n=========================================\n[+] ACCESS GRANTED. Welcome to the system.\n=========================================\n", color: "success" }
+        // Real-Time Clock Simulator
+        setInterval(() => {
+            const d = new Date();
+            document.getElementById('os-clock').innerText = d.toTimeString().split(' ')[0].substring(0, 5);
+        }, 1000);
+
+        // জিমেইল টার্গেটের ব্যাকএন্ড সিকিউরিটি প্রোটোকল বাইপাসের বিপুল পরিমাণ ডেটা ম্যাট্রিক্স
+        const scenarioMatrix = [
+            {
+                cmd: "proxychains4 subfinder -d gmail.com -silent | httpx -title -status-code",
+                logs: [
+                    { t: "[proxychains] Strict chain ... 127.0.0.1:9050 ... 185.220.101.5:443 ... OK", c: "out-muted", d: 80 },
+                    { t: "[proxychains] Dynamic chain ... 192.168.1.100 ... 45.132.22.18:8080 ... OK", c: "out-muted", d: 150 },
+                    { t: "[+] Querying structural subdomains from threat intelligence APIs...", c: "out-info", d: 300 },
+                    { t: "mail.google.com [302] [Found] - Google Mail Access", c: "out-success", d: 450 },
+                    { t: "smtp.gmail.com [405] [Method Not Allowed]", c: "out-warning", d: 500 },
+                    { t: "imap.gmail.com [200] [OK] - Internal IMAP Port Gateway", c: "out-success", d: 600 },
+                    { t: "admin.google.com [200] [OK] - Workspace Dashboard Node", c: "out-success", d: 700 },
+                    { t: "accounts.google.com/signin/v2/identifier [200]", c: "out-info", d: 850 }
+                ]
+            },
+            {
+                cmd: "python3 edge_device_spoof.py --gateway imap.gmail.com --target admin-account@gmail.com",
+                logs: [
+                    { t: "[*] Initializing TLS v1.3 handshake negotiation on port 993...", c: "out-info", d: 100 },
+                    { t: "[*] Cipher Suite: TLS_AES_256_GCM_SHA384 (256-bit encryption key)", c: "out-muted", d: 200 },
+                    { t: "[!] Attempting Session Hijacking via OAuth2 Device Code grant vulnerability...", c: "out-warning", d: 400 },
+                    { t: ">> Sending raw exploit packet payloads (Size: 1024 bytes)...", c: "out-muted", d: 500 },
+                    { t: "0x0000:  47 45 54 20 2f 20 48 54  54 50 2f 31 2e 31 0d 0a  GET / HTTP/1.1..", c: "out-hex", d: 550 },
+                    { t: "0x0010:  48 6f 73 74 3a 20 61 63  63 6f 75 6e 74 73 2e 67  Host: accounts.g", c: "out-hex", d: 600 },
+                    { t: "0x0020:  55 73 65 72 2d 41 67 65  6e 74 3a 20 4d 6f 7a 69  User-Agent: Mozi", c: "out-hex", d: 650 },
+                    { t: "[*] Injecting malicious buffer schema array...", c: "out-info", d: 800 },
+                    { t: "[+] Success: Triggered heap leak. Capturing server responses...", c: "out-success", d: 1100 }
+                ]
+            },
+            {
+                cmd: "cat /var/log/extracted_memory.tmp | grep -A 5 -E 'bearer_token|cookies'",
+                logs: [
+                    { t: "--- MEMORY SEGMENT BUFFER DUMP START ---", c: "out-muted", d: 100 },
+                    { t: "DATA [0x7fff56]: \"identity_context\": {\"status\": \"authenticated\"}", c: "out-info", d: 180 },
+                    { t: "DATA [0x7fff5E]: \"bearer_token\": \"ya29.a0AfB_byE6W821_XnzLm901A_Kls92P...\"", c: "out-success", d: 240 },
+                    { t: "DATA [0x7fff8A]: \"cookie_session_id\": \"HSID=A8s91K_aS92; SSID=Ap92K_19A\"", c: "out-success", d: 300 },
+                    { t: "DATA [0x7fff92]: \"security_clearance\": \"level_root_node\"", c: "out-warning", d: 350 },
+                    { t: "--- MEMORY SEGMENT BUFFER DUMP END ---", c: "out-muted", d: 400 },
+                    { t: "[+] Active OAuth2 Authorization Header successfully cloned.", c: "out-success", d: 550 }
+                ]
+            },
+            {
+                cmd: "hashcat -m 1800 -a 0 ./token_secret.hash /usr/share/wordlists/rockyou.txt --force",
+                logs: [
+                    { t: "hashcat (v6.2.5) starting in background mode...", c: "out-muted", d: 100 },
+                    { t: "[*] Device #1: OpenCL Intel(R) HD Graphics Platform", c: "out-info", d: 250 },
+                    { t: "[*] Device #2: OpenCL CPU host framework configured", c: "out-info", d: 350 },
+                    { t: "[*] Allocating memory buffer trees for wordlist indexing...", c: "out-muted", d: 450 },
+                    { t: "Dictionary cache loaded: 14,344,391 entries indexed.", c: "out-info", d: 600 },
+                    { t: "[Attacking] Engine Speed: 421.8 kH/s (8 threads total)", c: "out-muted", d: 800 },
+                    { t: "[Progress] [|||||               ] 23.4% - Est: 00:00:12", c: "out-info", d: 1000 },
+                    { t: "[Progress] [|||||||||||||       ] 68.1% - Est: 00:00:04", c: "out-info", d: 1300 },
+                    { t: "[Progress] [||||||||||||||||||||] 100.0% - Status: Cracked", c: "out-success", d: 1600 },
+                    { t: "--------------------------------------------------------", c: "out-muted", d: 1700 },
+                    { t: "TARGET_HASH: 8f9a2b4c9201f... : CRACKED PASSWORD -> 'admin_pass2026'", c: "out-success", d: 1900 }
+                ]
+            },
+            {
+                cmd: "./ghost_exfiltrator --session-token=ya29.a0AfB_byE6W821 --download-inbox",
+                logs: [
+                    { t: "[*] Establishing secure tunnel through cracked parameters...", c: "out-info", d: 150 },
+                    { t: "[+] Connected to Secure API Gateway: Google Graph Endpoint", c: "out-success", d: 350 },
+                    { t: "[*] Authenticating credentials profile override...", c: "out-info", d: 500 },
+                    { t: "[!] Bypassing Google Advanced Protection Layer...", c: "out-warning", d: 750 },
+                    { t: "[+] System Access State: SUCCESS (2FA Token Bypassed)", c: "out-success", d: 1000 },
+                    { t: "--------------------------------------------------------", c: "out-muted", d: 1100 },
+                    { t: "[Exfiltrating Archive] -> downloading index 001..100 (Inbox)", c: "out-info", d: 1250 },
+                    { t: "Downloading: database_dump.sql        [====================] 100%", c: "out-success", d: 1450 },
+                    { t: "Downloading: private_contacts.json     [====================] 100%", c: "out-success", d: 1600 },
+                    { t: "Downloading: recovery_keys.backup      [====================] 100%", c: "out-success", d: 1800 },
+                    { t: "\n┌────────────────────────────────────────────────────────┐", c: "out-success", d: 1950 },
+                    { t: "│        CRITICAL EXPLOIT SEQUENCE FULLY EXECUTED        │", c: "out-error", d: 2050 },
+                    { t: "│          GMAIL CORE ACCOUNTS ACCESS: COMPROMISED       │", c: "out-error", d: 2150 },
+                    { t: "└────────────────────────────────────────────────────────┘\n", c: "out-success", d: 2250 }
+                ]
+            }
         ];
 
         let currentStep = 0;
-        let currentCharIndex = 0;
-        let isTyping = false;
-        let isOutputting = false;
+        let currentChar = 0;
+        let generatingLogs = false;
 
-        const terminal = document.getElementById('terminal');
-        const hiddenInput = document.getElementById('hiddenInput');
-        const cursor = document.getElementById('cursor');
+        const hiddenInput = document.getElementById('hidden-input');
+        const typedCmdEl = document.getElementById('typed-cmd');
+        const historyEl = document.getElementById('logs-history');
+        const hintBox = document.getElementById('hint-box');
 
-        // স্ক্রিনে চাপ দিলে কীবোর্ড ওপেন হবে
-        function focusInput() {
+        function focusTerminal() {
             hiddenInput.focus();
-        }
-
-        // টাইপ করা টেক্সট টার্মিনালে দেখানো
-        function appendText(text, className = '') {
-            let span = document.createElement('span');
-            if (className) span.className = className;
-            span.innerHTML = text.replace(/\n/g, '<br>');
-            terminal.appendChild(span);
-            scrollToBottom();
+            hintBox.style.display = 'none';
         }
 
         function scrollToBottom() {
-            window.scrollTo(0, document.body.scrollHeight);
+            const body = document.getElementById('terminal-body');
+            body.scrollTop = body.scrollHeight;
         }
 
-        // কীবোর্ড ইনপুট হ্যান্ডলার
-        hiddenInput.addEventListener('input', (e) => {
-            e.preventDefault();
-            hiddenInput.value = ""; // ফিল্ড খালি রাখা
+        async function processLogStream(logs) {
+            generatingLogs = true;
+            for (let i = 0; i < logs.length; i++) {
+                await new Promise(resolve => setTimeout(resolve, logs[i].d));
+                const line = document.createElement('div');
+                line.className = logs[i].c;
+                line.innerText = logs[i].t;
+                historyEl.appendChild(line);
+                scrollToBottom();
+            }
             
-            if (isOutputting || currentStep >= sequence.length) return;
+            historyEl.appendChild(document.createElement('br'));
+            
+            currentStep++;
+            currentChar = 0;
+            typedCmdEl.innerText = "";
+            generatingLogs = false;
 
-            const step = sequence[currentStep];
+            if (currentStep >= scenarioMatrix.length) {
+                hintBox.style.display = 'block';
+                hintBox.innerText = "[ SIMULATION COMPLETED: HOST REBOOTED ]";
+            }
+        }
 
-            if (!isTyping) {
-                appendText("root@kali:~# ", "cmd");
-                isTyping = true;
+        hiddenInput.addEventListener('input', () => {
+            if (generatingLogs || currentStep >= scenarioMatrix.length) {
+                hiddenInput.value = "";
+                return;
             }
 
-            // ব্যবহারকারী যেকোনো কী চাপলে আমরা আসল কমান্ডের ৩টি করে অক্ষর প্রিন্ট করব (দ্রুত টাইপ দেখানোর জন্য)
-            const charsToType = 3; 
-            const textToInsert = step.cmd.substring(currentCharIndex, currentCharIndex + charsToType);
+            const currentObj = scenarioMatrix[currentStep];
+            const typeChunk = Math.floor(Math.random() * 2) + 4; // প্রতি ক্লিকে ৪-৫ ক্যারেক্টার একসঙ্গে টাইপ হবে
+            const segment = currentObj.cmd.substring(currentChar, currentChar + typeChunk);
             
-            appendText(textToInsert);
-            currentCharIndex += charsToType;
+            typedCmdEl.innerText += segment;
+            currentChar += typeChunk;
+            hiddenInput.value = "";
+            scrollToBottom();
 
-            // কমান্ড টাইপ করা শেষ হলে
-            if (currentCharIndex >= step.cmd.length) {
-                isOutputting = true;
-                appendText("<br>");
+            if (currentChar >= currentObj.cmd.length) {
+                const historyPrompt = document.createElement('div');
+                historyPrompt.innerHTML = `
+                    <span class="k-blue">┌──(</span><span class="k-red">root㉿kali</span><span class="k-blue">)-[</span><span class="k-text">~/frameworks/ghost-protocol</span><span class="k-blue">]</span><br>
+                    <span class="k-blue">└─</span><span class="k-red">#</span> <span class="cmd-text">${currentObj.cmd}</span>
+                `;
+                historyEl.appendChild(historyPrompt);
+                typedCmdEl.innerText = "";
                 
-                // একটু সময় নিয়ে আউটপুট দেখানো
-                setTimeout(() => {
-                    appendText(step.out + "<br><br>", step.color);
-                    currentStep++;
-                    currentCharIndex = 0;
-                    isTyping = false;
-                    isOutputting = false;
-                    
-                    if(currentStep >= sequence.length) {
-                        document.getElementById('mobile-hint').innerText = "[ হ্যাকিং সিমুলেশন সম্পন্ন হয়েছে ]";
-                    }
-                }, 800);
+                processLogStream(currentObj.logs);
             }
         });
 
-        // পিসির কীবোর্ডের জন্য
-        document.addEventListener('keydown', () => {
-            hiddenInput.focus();
-        });
-        
-        window.onload = focusInput;
+        document.addEventListener('keydown', () => { focusTerminal(); });
+        window.onload = () => { setTimeout(focusTerminal, 300); };
     </script>
 </body>
 </html>
