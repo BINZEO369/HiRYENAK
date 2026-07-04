@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>kali@kali: ~/frameworks/ghost-protocol</title>
+    <title>kali@core-node-sec: ~/api/interceptors/oauth2</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;700&display=swap');
 
@@ -14,8 +14,8 @@
         }
 
         body {
-            background-color: #0c0d12;
-            color: #b2b2b2;
+            background-color: #08090c;
+            color: #bcbcbc;
             font-family: 'Fira Code', monospace;
             height: 100vh;
             display: flex;
@@ -23,26 +23,27 @@
             overflow: hidden;
         }
 
-        /* Kali OS Top Panel Simulator */
-        #os-bar {
-            background-color: #14161d;
-            height: 24px;
+        /* Kali Desktop Panel OS Bar */
+        #os-panel {
+            background-color: #111216;
+            height: 26px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 10px;
+            padding: 0 12px;
             font-size: 11px;
             color: #8c91a0;
-            border-bottom: 1px solid #222631;
+            border-bottom: 1px solid #1c1e24;
             user-select: none;
         }
-        .os-left, .os-right { display: flex; align-items: center; gap: 15px; }
-        .sys-load { color: #50fa7b; }
+        .panel-group { display: flex; align-items: center; gap: 14px; }
+        .stat-active { color: #50fa7b; font-weight: bold; }
+        .stat-alert { color: #ff5555; font-weight: bold; }
 
-        /* Window Header Style (XFCE) */
-        #window-header {
-            background: linear-gradient(to bottom, #2a2e38, #21242c);
-            border-bottom: 1px solid #15171c;
+        /* Window Header Chrome (XFCE4 Terminal Style) */
+        #window-chrome {
+            background: linear-gradient(to bottom, #252830, #1c1e24);
+            border-bottom: 1px solid #111216;
             padding: 6px 12px;
             display: flex;
             justify-content: space-between;
@@ -51,48 +52,48 @@
             color: #c5c9db;
         }
         .window-title { display: flex; align-items: center; gap: 8px; font-weight: 500; }
-        .window-buttons { display: flex; gap: 6px; }
-        .btn { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
-        .btn-close { background-color: #ff5555; }
-        .btn-min { background-color: #ffb86c; }
-        .btn-max { background-color: #50fa7b; }
+        .window-controls { display: flex; gap: 6px; }
+        .dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+        .dot-close { background-color: #ff5555; }
+        .dot-min { background-color: #ffb86c; }
+        .dot-max { background-color: #50fa7b; }
 
-        /* Terminal Display Screen */
-        #terminal-body {
+        /* Terminal Main Frame */
+        #terminal-viewport {
             flex-grow: 1;
-            padding: 12px;
+            padding: 14px;
             overflow-y: auto;
             font-size: 11px;
-            line-height: 1.4;
+            line-height: 1.45;
             word-wrap: break-word;
-            background-color: #0c0d12;
+            background-color: #08090c;
         }
 
-        /* Colors matching Kali ZSH Theme */
+        /* Kali Color Palettes */
         .k-blue { color: #268bd2; font-weight: bold; }
         .k-red { color: #dc322f; font-weight: bold; }
-        .k-cyan { color: #2aa198; }
-        .k-green { color: #859900; }
-        .cmd-text { color: #ffffff; font-weight: bold; }
+        .k-magenta { color: #d33682; }
+        .k-text { color: #eaeaea; }
+        .cmd-line { color: #ffffff; font-weight: bold; }
         
-        /* Log Colors */
-        .out-success { color: #50fa7b; }
-        .out-error { color: #ff5555; }
-        .out-warning { color: #ffb86c; }
-        .out-info { color: #8be9fd; }
-        .out-muted { color: #55596a; }
-        .out-hex { color: #44475a; font-size: 10px; }
+        /* Advanced Telemetry Log Classes */
+        .log-ok { color: #50fa7b; }
+        .log-fail { color: #ff5555; }
+        .log-warn { color: #ffb86c; }
+        .log-info { color: #8be9fd; }
+        .log-dark { color: #4e5163; }
+        .log-hex { color: #3b3d4a; font-size: 10px; }
+        .log-json { color: #bd93f9; font-size: 10.5px; }
 
-        .kali-logo {
+        .ascii-banner {
             color: #268bd2;
             white-space: pre;
-            font-size: 7px;
+            font-size: 6.5px;
             line-height: 1.1;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             font-weight: bold;
         }
 
-        /* Cursor */
         .cursor {
             display: inline-block;
             width: 8px;
@@ -106,19 +107,19 @@
 
         #hidden-input { position: absolute; opacity: 0; top: -1000px; }
         
-        #hint-box {
+        #status-overlay {
             position: fixed;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             color: #6272a4;
             font-size: 11px;
-            background: #14161d;
-            padding: 8px 16px;
+            background: #111216;
+            padding: 8px 18px;
             border-radius: 4px;
-            border: 1px solid #222631;
+            border: 1px solid #1c1e24;
             z-index: 100;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }
 
         ::-webkit-scrollbar { display: none; }
@@ -126,207 +127,198 @@
 </head>
 <body onclick="focusTerminal()">
 
-    <div id="os-bar">
-        <div class="os-left">
-            <span>Applications</span>
+    <div id="os-panel">
+        <div class="panel-group">
+            <span style="font-weight: bold; color: #fff;">Kali Applications</span>
             <span>Places</span>
-            <span>Terminal</span>
+            <span>View</span>
         </div>
-        <div class="os-right">
-            <span>[VPN: <span class="sys-load">ON</span>]</span>
-            <span>CPU: <span class="sys-load">24%</span></span>
-            <span>RAM: <span class="sys-load">3.1GB/16GB</span></span>
-            <span id="os-clock">21:30</span>
+        <div class="panel-group">
+            <span>[NET_INTERFACE: <span class="stat-active">wlan0mon</span>]</span>
+            <span>TUNNEL: <span class="stat-active">AES-256-GCM</span></span>
+            <span>SYS_TEMP: <span class="stat-warn">48°C</span></span>
+            <span id="live-timer">00:00:00</span>
         </div>
     </div>
 
-    <div id="window-header">
+    <div id="window-chrome">
         <div class="window-title">
-            <span style="color: #268bd2;">⬤</span> root@kali: ~/frameworks/ghost-protocol
+            <span style="color: #268bd2;">🗖</span> root@core-node-sec: ~/api/interceptors/oauth2
         </div>
-        <div class="window-buttons">
-            <span class="btn btn-min"></span>
-            <span class="btn btn-max"></span>
-            <span class="btn btn-close"></span>
-        </div>
-    </div>
-
-    <div id="terminal-body">
-        <div class="kali-logo">
-  ██████╗ ███████╗██████╗  ██████╗ ██████╗ ███████╗███████╗███████╗███████╗
-  ██╔══██╗██╔════╝██╔══██╗██╔═══██╗██╔══██╗██╔════╝██╔════╝██╔════╝██╔════╝
-  ██████╔╝█████╗  ██████╔╝██║   ██║██████╔╝███████╗█████╗  █████╗  ███████╗
-  ██╔═══╝ ██╔══╝  ██╔══██╗██║   ██║██╔═══╝ ╚════██║██╔══╝  ██╔══╝  ╚════██║
-  ██║     ███████╗██║  ██║╚██████╔╝██║     ███████║███████╗███████╗███████║
-  ╚═╝     ╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚══════╝╚══════╝╚══════╝╚══════╝
-                                              [ INFRASTRUCTURE PENETRATION TOOL v6.1 ]
-        </div>
-        
-        <div id="logs-history"></div>
-        
-        <div id="prompt-line">
-            <span class="k-blue">┌──(</span><span class="k-red">root㉿kali</span><span class="k-blue">)-[</span><span class="k-text">~/frameworks/ghost-protocol</span><span class="k-blue">]</span><br>
-            <span class="k-blue">└─</span><span class="k-red">#</span> <span id="typed-cmd" class="cmd-text"></span><span class="cursor"></span>
+        <div class="window-controls">
+            <span class="dot dot-min"></span>
+            <span class="dot dot-max"></span>
+            <span class="dot dot-close"></span>
         </div>
     </div>
 
-    <div id="hint-box">[ স্ক্রিনে যেকোনো জায়গায় ক্লিক বা ট্যাপ করে কী-বোর্ড আনুন এবং টাইপ করুন ]</div>
+    <div id="terminal-viewport">
+        <div class="ascii-banner">
+  ██████╗  █████╗ ██╗     ██╗██╗     ██╗███╗   ██╗██╗   ██╗██╗  ██╗   ██████╗ ██████╗ ██████╗ ███████╗
+  ██╔══██╗██╔══██╗██║     ██║██║     ██║████╗  ██║██║   ██║╚██╗██╔╝  ██╔════╝██╔═══██╗██╔══██╗██╔════╝
+  ██████╔╝███████║██║     ██║██║     ██║██╔██╗ ██║██║   ██║ ╚███╔╝   ██║     ██║   ██║██████╔╝█████╗  
+  ██╔═══╝ ██╔══██║██║     ██║██║     ██║██║╚██╗██║██║   ██║ ██╔██╗   ██║     ██║   ██║██╔══██╗██╔══╝  
+  ██║     ██║  ██║███████╗██║███████╗██║██║ ╚████║╚██████╔╝██╔╝ ██╗  ╚██████╗╚██████╔╝██║  ██║███████╗
+  ╚═╝     ╚═╝  ╚═╝╚══════╝╚═╝╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝   ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝
+                                                      [ BACKEND API AUDITING ENGINE v7.4.2 ]
+        </div>
+        
+        <div id="terminal-history"></div>
+        
+        <div id="current-prompt-wrapper">
+            <span class="k-blue">┌──(</span><span class="k-red">root㉿core-node-sec</span><span class="k-blue">)-[</span><span class="k-text">~/api/interceptors/oauth2</span><span class="k-blue">]</span><br>
+            <span class="k-blue">└─</span><span class="k-red">#</span> <span id="visible-cmd-buffer" class="cmd-line"></span><span class="cursor"></span>
+        </div>
+    </div>
+
+    <div id="status-overlay">[ স্ক্রিনে ট্যাপ করে ইনপুট অ্যাক্টিভেট করুন এবং যেকোনো কী টাইপ করুন ]</div>
     
     <input type="text" id="hidden-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
 
     <script>
-        // Real-Time Clock Simulator
+        // Update Live Status Bar Timer
         setInterval(() => {
-            const d = new Date();
-            document.getElementById('os-clock').innerText = d.toTimeString().split(' ')[0].substring(0, 5);
+            const time = new Date();
+            document.getElementById('live-timer').innerText = time.toTimeString().split(' ')[0];
         }, 1000);
 
-        // জিমেইল টার্গেটের ব্যাকএন্ড সিকিউরিটি প্রোটোকল বাইপাসের বিপুল পরিমাণ ডেটা ম্যাট্রিক্স
-        const scenarioMatrix = [
+        // হাই-লেভেল লজিক্যাল সাইভার সিকিউরিটি টেলিম্যাট্রি ম্যাট্রিক্স
+        const telemetricSequence = [
             {
-                cmd: "proxychains4 subfinder -d gmail.com -silent | httpx -title -status-code",
-                logs: [
-                    { t: "[proxychains] Strict chain ... 127.0.0.1:9050 ... 185.220.101.5:443 ... OK", c: "out-muted", d: 80 },
-                    { t: "[proxychains] Dynamic chain ... 192.168.1.100 ... 45.132.22.18:8080 ... OK", c: "out-muted", d: 150 },
-                    { t: "[+] Querying structural subdomains from threat intelligence APIs...", c: "out-info", d: 300 },
-                    { t: "mail.google.com [302] [Found] - Google Mail Access", c: "out-success", d: 450 },
-                    { t: "smtp.gmail.com [405] [Method Not Allowed]", c: "out-warning", d: 500 },
-                    { t: "imap.gmail.com [200] [OK] - Internal IMAP Port Gateway", c: "out-success", d: 600 },
-                    { t: "admin.google.com [200] [OK] - Workspace Dashboard Node", c: "out-success", d: 700 },
-                    { t: "accounts.google.com/signin/v2/identifier [200]", c: "out-info", d: 850 }
+                cmd: "proxychains4 mitmproxy --mode reverse:https://imap.gmail.com:993 --listen-port 8443 --ssl-insecure",
+                streams: [
+                    { t: "[proxychains] ProxyChain configuration initializing... read successful (/etc/proxychains4.conf)", c: "log-dark", d: 80 },
+                    { t: "[proxychains] Route 1: 127.0.0.1:9050 (Tor local loopback) -> Node verified", c: "log-dark", d: 120 },
+                    { t: "[proxychains] Route 2: 185.220.101.12:443 (Exit Node TLS) -> Transport Up", c: "log-dark", d: 180 },
+                    { t: "[+] mitmproxy reverse proxy master thread spawned safely on PID 48102", c: "log-info", d: 350 },
+                    { t: "[*] Listening for explicit routing descriptors on 0.0.0.0:8443...", c: "log-ok", d: 500 },
+                    { t: "[!] Intercepting SSL/TLS Certificate Signature: Subject -> CN=*.google.com", c: "log-warn", d: 750 },
+                    { t: "[+] Cipher Match: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (Established)", c: "log-ok", d: 900 }
                 ]
             },
             {
-                cmd: "python3 edge_device_spoof.py --gateway imap.gmail.com --target admin-account@gmail.com",
-                logs: [
-                    { t: "[*] Initializing TLS v1.3 handshake negotiation on port 993...", c: "out-info", d: 100 },
-                    { t: "[*] Cipher Suite: TLS_AES_256_GCM_SHA384 (256-bit encryption key)", c: "out-muted", d: 200 },
-                    { t: "[!] Attempting Session Hijacking via OAuth2 Device Code grant vulnerability...", c: "out-warning", d: 400 },
-                    { t: ">> Sending raw exploit packet payloads (Size: 1024 bytes)...", c: "out-muted", d: 500 },
-                    { t: "0x0000:  47 45 54 20 2f 20 48 54  54 50 2f 31 2e 31 0d 0a  GET / HTTP/1.1..", c: "out-hex", d: 550 },
-                    { t: "0x0010:  48 6f 73 74 3a 20 61 63  63 6f 75 6e 74 73 2e 67  Host: accounts.g", c: "out-hex", d: 600 },
-                    { t: "0x0020:  55 73 65 72 2d 41 67 65  6e 74 3a 20 4d 6f 7a 69  User-Agent: Mozi", c: "out-hex", d: 650 },
-                    { t: "[*] Injecting malicious buffer schema array...", c: "out-info", d: 800 },
-                    { t: "[+] Success: Triggered heap leak. Capturing server responses...", c: "out-success", d: 1100 }
+                cmd: "curl -s -X POST https://accounts.google.com/o/oauth2/token -d 'client_id=device_spoof_node_92&grant_type=device_code'",
+                streams: [
+                    { t: ">>> Transmitting REST API Handshake payload to primary OAuth endpoint...", c: "log-info", d: 150 },
+                    { t: "<<< Parsing upstream HTTP/1.1 200 OK Response Envelope:", c: "log-dark", d: 300 },
+                    { t: "{\n  \"device_code\": \"AGv03sK_291AsKlx9201L_Ska021sKd\",\n  \"user_code\": \"HZQX-WMRL\",\n  \"verification_url\": \"https://google.com/device\",\n  \"expires_in\": 1800,\n  \"interval\": 5\n}", c: "log-json", d: 500 },
+                    { t: "[*] Extracting device_code parameters to runtime variables...", c: "log-info", d: 650 },
+                    { t: "[!] Device verification schema bypassed via active session hijacking.", c: "log-warn", d: 900 }
                 ]
             },
             {
-                cmd: "cat /var/log/extracted_memory.tmp | grep -A 5 -E 'bearer_token|cookies'",
-                logs: [
-                    { t: "--- MEMORY SEGMENT BUFFER DUMP START ---", c: "out-muted", d: 100 },
-                    { t: "DATA [0x7fff56]: \"identity_context\": {\"status\": \"authenticated\"}", c: "out-info", d: 180 },
-                    { t: "DATA [0x7fff5E]: \"bearer_token\": \"ya29.a0AfB_byE6W821_XnzLm901A_Kls92P...\"", c: "out-success", d: 240 },
-                    { t: "DATA [0x7fff8A]: \"cookie_session_id\": \"HSID=A8s91K_aS92; SSID=Ap92K_19A\"", c: "out-success", d: 300 },
-                    { t: "DATA [0x7fff92]: \"security_clearance\": \"level_root_node\"", c: "out-warning", d: 350 },
-                    { t: "--- MEMORY SEGMENT BUFFER DUMP END ---", c: "out-muted", d: 400 },
-                    { t: "[+] Active OAuth2 Authorization Header successfully cloned.", c: "out-success", d: 550 }
+                cmd: "python3 jwt_decoder.py --token /tmp/intercepted_bearer.jwt --verify-signature=false",
+                streams: [
+                    { t: "[*] Reading target stream payload: /tmp/intercepted_bearer.jwt (Size: 842 bytes)", c: "log-dark", d: 100 },
+                    { t: "[+] JWT Header Part: {\"alg\":\"RS256\",\"kid\":\"a73f9b201...\",\"ty     p\":\"JWT\"}", c: "log-json", d: 250 },
+                    { t: "[+] JWT Claims Payload Restructured successfully:", c: "log-info", d: 400 },
+                    { t: "{\n  \"iss\": \"https://accounts.google.com\",\n  \"sub\": \"109238102938102391\",\n  \"email\": \"target-account@gmail.com\",\n  \"email_verified\": true,\n  \"scope\": \"https://mail.google.com/ https://www.googleapis.com/auth/userinfo.profile\",\n  \"exp\": 1783284100\n}", c: "log-json", d: 650 },
+                    { t: "[+] Integrity check bypassed. Access token validation matches master profiles.", c: "log-ok", d: 850 }
                 ]
             },
             {
-                cmd: "hashcat -m 1800 -a 0 ./token_secret.hash /usr/share/wordlists/rockyou.txt --force",
-                logs: [
-                    { t: "hashcat (v6.2.5) starting in background mode...", c: "out-muted", d: 100 },
-                    { t: "[*] Device #1: OpenCL Intel(R) HD Graphics Platform", c: "out-info", d: 250 },
-                    { t: "[*] Device #2: OpenCL CPU host framework configured", c: "out-info", d: 350 },
-                    { t: "[*] Allocating memory buffer trees for wordlist indexing...", c: "out-muted", d: 450 },
-                    { t: "Dictionary cache loaded: 14,344,391 entries indexed.", c: "out-info", d: 600 },
-                    { t: "[Attacking] Engine Speed: 421.8 kH/s (8 threads total)", c: "out-muted", d: 800 },
-                    { t: "[Progress] [|||||               ] 23.4% - Est: 00:00:12", c: "out-info", d: 1000 },
-                    { t: "[Progress] [|||||||||||||       ] 68.1% - Est: 00:00:04", c: "out-info", d: 1300 },
-                    { t: "[Progress] [||||||||||||||||||||] 100.0% - Status: Cracked", c: "out-success", d: 1600 },
-                    { t: "--------------------------------------------------------", c: "out-muted", d: 1700 },
-                    { t: "TARGET_HASH: 8f9a2b4c9201f... : CRACKED PASSWORD -> 'admin_pass2026'", c: "out-success", d: 1900 }
+                cmd: "hydra -l target-account@gmail.com -P /usr/share/wordlists/fasttrack.txt imap.gmail.com imap -S -s 993 -V",
+                streams: [
+                    { t: "Hydra v9.5 (c) 2026 by van Hauser / THC - Please do not use in production", c: "log-dark", d: 150 },
+                    { t: "[DATA] Compiling task execution matrices: 1 target, 1 login, 2400 keys", c: "log-info", d: 300 },
+                    { t: "[STATUS] Attack loop activated. Spawning 16 concurrent threads...", c: "log-ok", d: 450 },
+                    { t: "[ATTACK] Thread #04 testing token signature: 'p@ssword123' -> Access Denied", c: "log-hex", d: 550 },
+                    { t: "[ATTACK] Thread #09 testing token signature: 'shadow_gate' -> Access Denied", c: "log-hex", d: 600 },
+                    { t: "[ATTACK] Thread #14 testing token signature: 'master_key00' -> Access Denied", c: "log-hex", d: 650 },
+                    { t: "[ATTACK] Thread #02 testing token signature: 'security_2026' -> Access Denied", c: "log-hex", d: 700 },
+                    { t: "[+] [993][imap] host: imap.gmail.com | login: target-account@gmail.com | password: 'security_2026' | STATUS: VALID CREDENTIALS FOUND", c: "log-ok", d: 1100 },
+                    { t: "[*] Session persistent token initialized successfully.", c: "log-info", d: 1250 }
                 ]
             },
             {
-                cmd: "./ghost_exfiltrator --session-token=ya29.a0AfB_byE6W821 --download-inbox",
-                logs: [
-                    { t: "[*] Establishing secure tunnel through cracked parameters...", c: "out-info", d: 150 },
-                    { t: "[+] Connected to Secure API Gateway: Google Graph Endpoint", c: "out-success", d: 350 },
-                    { t: "[*] Authenticating credentials profile override...", c: "out-info", d: 500 },
-                    { t: "[!] Bypassing Google Advanced Protection Layer...", c: "out-warning", d: 750 },
-                    { t: "[+] System Access State: SUCCESS (2FA Token Bypassed)", c: "out-success", d: 1000 },
-                    { t: "--------------------------------------------------------", c: "out-muted", d: 1100 },
-                    { t: "[Exfiltrating Archive] -> downloading index 001..100 (Inbox)", c: "out-info", d: 1250 },
-                    { t: "Downloading: database_dump.sql        [====================] 100%", c: "out-success", d: 1450 },
-                    { t: "Downloading: private_contacts.json     [====================] 100%", c: "out-success", d: 1600 },
-                    { t: "Downloading: recovery_keys.backup      [====================] 100%", c: "out-success", d: 1800 },
-                    { t: "\n┌────────────────────────────────────────────────────────┐", c: "out-success", d: 1950 },
-                    { t: "│        CRITICAL EXPLOIT SEQUENCE FULLY EXECUTED        │", c: "out-error", d: 2050 },
-                    { t: "│          GMAIL CORE ACCOUNTS ACCESS: COMPROMISED       │", c: "out-error", d: 2150 },
-                    { t: "└────────────────────────────────────────────────────────┘\n", c: "out-success", d: 2250 }
+                cmd: "./api_exfiltration_client --auth-type=Bearer --token-file=/tmp/valid.session --dump-all",
+                streams: [
+                    { t: "[*] Triggering IMAP Data Exfiltration over secure TLS tunnel...", c: "log-info", d: 150 },
+                    { t: "[*] Synchronizing directory folders: INBOX, SENT, ARCHIVE, TRASH", c: "log-dark", d: 300 },
+                    { t: ">> Fetching unique resource identifier index keys... (Total: 4,819 records)", c: "log-dark", d: 450 },
+                    { t: "Downloading Packet Segment [A-01] [====================] 100% (Metadata)", c: "log-ok", d: 650 },
+                    { t: "Downloading Packet Segment [A-02] [====================] 100% (OAuth Log)", c: "log-ok", d: 800 },
+                    { t: "Downloading Packet Segment [A-03] [=============       ] 65% (Payload)", c: "log-warn", d: 1000 },
+                    { t: "Downloading Packet Segment [A-03] [====================] 100% (Payload)", c: "log-ok", d: 1200 },
+                    { t: "[+] Data integrity validation check (SHA-256 Checksum): MATCHED", c: "log-info", d: 1350 },
+                    { t: "Output compiled safely to: /root/workspace/exfil_archive.tar.gz", c: "log-ok", d: 1500 },
+                    { t: "\n┌──────────────────────────────────────────────────────────────────┐", c: "log-ok", d: 1650 },
+                    { t: "│          TELEMETRY AUDIT COMPLETE: ALL CRITERIA INJECTED         │", c: "log-fail", d: 1750 },
+                    { t: "│          GMAIL INTERFACE COMPROMISED - ROOT NODE ACCESSED        │", c: "log-fail", d: 1850 },
+                    { t: "└──────────────────────────────────────────────────────────────────┘\n", c: "log-ok", d: 1950 }
                 ]
             }
         ];
 
-        let currentStep = 0;
-        let currentChar = 0;
-        let generatingLogs = false;
+        let indexStep = 0;
+        let indexChar = 0;
+        let streamingActive = false;
 
         const hiddenInput = document.getElementById('hidden-input');
-        const typedCmdEl = document.getElementById('typed-cmd');
-        const historyEl = document.getElementById('logs-history');
-        const hintBox = document.getElementById('hint-box');
+        const visibleCmdBuffer = document.getElementById('visible-cmd-buffer');
+        const historyEl = document.getElementById('terminal-history');
+        const overlayBox = document.getElementById('status-overlay');
 
         function focusTerminal() {
             hiddenInput.focus();
-            hintBox.style.display = 'none';
+            overlayBox.style.display = 'none';
         }
 
-        function scrollToBottom() {
-            const body = document.getElementById('terminal-body');
-            body.scrollTop = body.scrollHeight;
+        function forceScroll() {
+            const viewport = document.getElementById('terminal-viewport');
+            viewport.scrollTop = viewport.scrollHeight;
         }
 
-        async function processLogStream(logs) {
-            generatingLogs = true;
-            for (let i = 0; i < logs.length; i++) {
-                await new Promise(resolve => setTimeout(resolve, logs[i].d));
+        async function streamLogOutput(streams) {
+            streamingActive = true;
+            for (let i = 0; i < streams.length; i++) {
+                await new Promise(res => setTimeout(res, streams[i].d));
                 const line = document.createElement('div');
-                line.className = logs[i].c;
-                line.innerText = logs[i].t;
+                line.className = streams[i].c;
+                line.innerText = streams[i].t;
                 historyEl.appendChild(line);
-                scrollToBottom();
+                forceScroll();
             }
             
             historyEl.appendChild(document.createElement('br'));
             
-            currentStep++;
-            currentChar = 0;
-            typedCmdEl.innerText = "";
-            generatingLogs = false;
+            indexStep++;
+            indexChar = 0;
+            visibleCmdBuffer.innerText = "";
+            streamingActive = false;
 
-            if (currentStep >= scenarioMatrix.length) {
-                hintBox.style.display = 'block';
-                hintBox.innerText = "[ SIMULATION COMPLETED: HOST REBOOTED ]";
+            if (indexStep >= telemetricSequence.length) {
+                overlayBox.style.display = 'block';
+                overlayBox.innerText = "[ TERMINAL PROCESS ENDED: DISCONNECTED ]";
             }
         }
 
         hiddenInput.addEventListener('input', () => {
-            if (generatingLogs || currentStep >= scenarioMatrix.length) {
+            if (streamingActive || indexStep >= telemetricSequence.length) {
                 hiddenInput.value = "";
                 return;
             }
 
-            const currentObj = scenarioMatrix[currentStep];
-            const typeChunk = Math.floor(Math.random() * 2) + 4; // প্রতি ক্লিকে ৪-৫ ক্যারেক্টার একসঙ্গে টাইপ হবে
-            const segment = currentObj.cmd.substring(currentChar, currentChar + typeChunk);
+            const currentScenario = telemetricSequence[indexStep];
+            // HackerTyper Velocity Matrix (৪ থেকে ৬ টি টেক্সট ক্যারেক্টার প্রতি কি-স্ট্রোকে প্রিন্ট করবে)
+            const strokeVelocity = Math.floor(Math.random() * 3) + 4;
+            const textSlice = currentScenario.cmd.substring(indexChar, indexChar + strokeVelocity);
             
-            typedCmdEl.innerText += segment;
-            currentChar += typeChunk;
+            visibleCmdBuffer.innerText += textSlice;
+            indexChar += strokeVelocity;
             hiddenInput.value = "";
-            scrollToBottom();
+            forceScroll();
 
-            if (currentChar >= currentObj.cmd.length) {
-                const historyPrompt = document.createElement('div');
-                historyPrompt.innerHTML = `
-                    <span class="k-blue">┌──(</span><span class="k-red">root㉿kali</span><span class="k-blue">)-[</span><span class="k-text">~/frameworks/ghost-protocol</span><span class="k-blue">]</span><br>
-                    <span class="k-blue">└─</span><span class="k-red">#</span> <span class="cmd-text">${currentObj.cmd}</span>
+            if (indexChar >= currentScenario.cmd.length) {
+                const completedPromptLine = document.createElement('div');
+                completedPromptLine.innerHTML = `
+                    <span class="k-blue">┌──(</span><span class="k-red">root㉿core-node-sec</span><span class="k-blue">)-[</span><span class="k-text">~/api/interceptors/oauth2</span><span class="k-blue">]</span><br>
+                    <span class="k-blue">└─</span><span class="k-red">#</span> <span class="cmd-line">${currentScenario.cmd}</span>
                 `;
-                historyEl.appendChild(historyPrompt);
-                typedCmdEl.innerText = "";
+                historyEl.appendChild(completedPromptLine);
+                visibleCmdBuffer.innerText = "";
                 
-                processLogStream(currentObj.logs);
+                streamLogOutput(currentScenario.streams);
             }
         });
 
